@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="嵌入式打卡">
+<meta name="theme-color" content="#0b1220">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230ea5e9'/%3E%3Ctext x='90' y='120' font-size='90' text-anchor='middle' fill='white' font-family='sans-serif'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<title>嵌入式学习打卡</title>
+<style>
+:root{
+  --bg:#0b1220; --bg2:#0f172a; --card:#151f33; --card2:#1b2740;
+  --line:#243049; --txt:#e7edf7; --dim:#8fa0bd; --dim2:#64748b;
+  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --pri:#38bdf8; --pri2:#0ea5e9;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+  font-size:15px;line-height:1.5}
+body{padding-bottom:calc(76px + var(--safe-bottom))}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0b1220ee,#0b1220cc);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:calc(var(--safe-top) + 10px) 14px 10px}
+h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+h1 .dot{width:8px;height:8px;border-radius:50%;background:var(--pri);box-shadow:0 0 10px var(--pri)}
+.sub{margin-top:4px;font-size:12px;color:var(--dim);display:flex;gap:10px;flex-wrap:wrap}
+.sub b{color:var(--pri);font-weight:600}
+main{padding:12px 12px 20px;max-width:720px;margin:0 auto}
+.view{display:none}.view.active{display:block}
+/* 进度条 */
+.bar{height:6px;border-radius:3px;background:#1e293b;overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--pri2),var(--ok));border-radius:3px;transition:width .35s}
+/* 卡片 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;overflow:hidden}
+.card.done{border-color:#1f6f45;background:linear-gradient(180deg,#132a22,#151f33)}
+.card.open{border-color:#2a5f86}
+.card-h{display:flex;align-items:center;gap:9px}
+.wk{flex:0 0 auto;min-width:52px;height:34px;border-radius:9px;background:var(--card2);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--pri);padding:0 8px}
+.card.done .wk{background:#14532d;color:#86efac}
+.card-t{flex:1;font-weight:600;font-size:14.5px;line-height:1.35}
+.card-m{font-size:11.5px;color:var(--dim2);margin:5px 0 0 0}
+.chev{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:var(--dim2);
+  transition:transform .2s;flex:0 0 auto}
+.chev.r{transform:rotate(90deg)}
+.body{margin-top:11px;border-top:1px dashed var(--line);padding-top:11px}
+.sec-t{font-size:11.5px;font-weight:700;color:var(--dim);letter-spacing:.6px;margin:11px 0 6px}
+.deliv{background:#0e1a2e;border-left:3px solid var(--pri);border-radius:6px;padding:8px 10px;font-size:13px;color:#cfe0f5}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-radius:9px;cursor:pointer}
+.chk:active{background:#1c2a44}
+.chk input{appearance:none;width:21px;height:21px;flex:0 0 auto;margin:0;border:1.5px solid #3b4a66;
+  border-radius:6px;background:#0d1526;position:relative;transition:.15s}
+.chk input:checked{background:var(--ok);border-color:var(--ok)}
+.chk input:checked::after{content:"";position:absolute;left:6px;top:2px;width:6px;height:11px;
+  border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.chk span{font-size:13.5px;color:#dbe6f6;flex:1}
+.chk input:checked + span{color:var(--dim2);text-decoration:line-through}
+textarea,input[type=date],input[type=number],input[type=text],select{
+  width:100%;background:#0d1526;border:1px solid var(--line);color:var(--txt);border-radius:9px;
+  padding:9px 10px;font-size:13.5px;font-family:inherit}
+textarea{min-height:56px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;margin-top:8px}
+.row>*{flex:1}
+.row .lbl{flex:0 0 auto;font-size:12.5px;color:var(--dim)}
+/* 状态胶囊 */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 9px;border-radius:20px;
+  border:1px solid var(--line);color:var(--dim);background:#0d1526}
+.pill.ok{color:#86efac;border-color:#1f6f45;background:#0f2a1d}
+.pill.warn{color:#fcd34d;border-color:#78601a;background:#2a2410}
+.pill.bad{color:#fca5a5;border-color:#7f2d2d;background:#2a1414}
+.pill.pri{color:#7dd3fc;border-color:#2a5f86;background:#0d2233}
+.btns{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.btn{flex:1;min-width:82px;text-align:center;padding:10px;border-radius:10px;border:1px solid var(--line);
+  background:var(--card2);color:var(--txt);font-size:13.5px;font-weight:600;cursor:pointer}
+.btn:active{transform:scale(.97)}
+.btn.ok{background:#14532d;border-color:#1f6f45;color:#bbf7d0}
+.btn.warn{background:#3a2c0c;border-color:#78601a;color:#fde68a}
+.btn.bad{background:#3a1616;border-color:#7f2d2d;color:#fecaca}
+.btn.pri{background:var(--pri2);border-color:var(--pri);color:#04202e}
+/* 折叠块 */
+details.blk{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+details.blk>summary{padding:12px 14px;font-weight:700;font-size:14px;cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:8px}
+details.blk>summary::-webkit-details-marker{display:none}
+details.blk>summary .n{font-size:11px;color:var(--dim2);font-weight:500;margin-left:auto}
+details.blk .inner{padding:0 12px 12px}
+/* 题库 */
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:9px}
+.q .qh{display:flex;gap:8px;align-items:flex-start}
+.q .num{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:var(--card2);color:var(--pri);
+  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.q .qt{flex:1;font-size:14px;font-weight:600;line-height:1.5}
+.q .qa{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);font-size:13px;color:#a7f3d0;display:none}
+.q.show .qa{display:block}
+.q .qa b{color:#6ee7b7}
+/* 统计 */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px}
+.stat .v{font-size:24px;font-weight:800;color:var(--pri);letter-spacing:-.5px}
+.stat .l{font-size:11.5px;color:var(--dim);margin-top:3px}
+.tl{list-style:none;padding:0;margin:8px 0 0}
+.tl li{display:flex;gap:9px;font-size:13px;padding:7px 0;border-bottom:1px solid #1a2438;align-items:flex-start}
+.tl li:last-child{border:0}
+.tl .t{flex:0 0 auto;color:var(--dim2);font-size:11.5px;min-width:44px;padding-top:2px}
+/* 底部导航 */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;
+  background:#0d1526ee;backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  padding:6px 4px calc(6px + var(--safe-bottom))}
+nav button{flex:1;background:none;border:0;color:var(--dim2);font-size:10.5px;padding:5px 0;
+  display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;cursor:pointer}
+nav button .ic{font-size:19px;line-height:1}
+nav button.on{color:var(--pri)}
+.notice{background:#0d2233;border:1px solid #2a5f86;border-radius:12px;padding:11px 13px;font-size:13px;
+  color:#bae6fd;margin-bottom:11px;line-height:1.6}
+h3{font-size:14px;margin:16px 0 8px;color:var(--dim);letter-spacing:.4px}
+.toast{position:fixed;left:50%;bottom:calc(88px + var(--safe-bottom));transform:translateX(-50%);
+  background:#0b1220f2;border:1px solid var(--pri);color:#e0f2fe;padding:9px 16px;border-radius:22px;
+  font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:88vw;text-align:center}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="dot"></span>嵌入式学习打卡</h1>
+  <div class="sub">
+    <span>目标：<b id="goalTxt">研二寒假投递大厂实习</b></span>
+    <span>第 <b id="weekNow">1</b>/40 周</span>
+    <span>已完成 <b id="weekDone">0</b> 周</span>
+  </div>
+  <div class="bar"><i id="topBar" style="width:0%"></i></div>
+</header>
+
+<main>
+  <!-- 打卡 -->
+  <section id="v-weeks" class="view active">
+    <div class="notice" id="startNotice"></div>
+    <div id="weekList"></div>
+  </section>
+
+  <!-- 题库 -->
+  <section id="v-quiz" class="view">
+    <div class="notice">先自己答，再点"看答案"。答完按实际得分记录，&lt;80 分要把错题写进《检验题库.md》的错题本。</div>
+    <div id="quizGroups"></div>
+  </section>
+
+  <!-- 统计 -->
+  <section id="v-stat" class="view">
+    <div class="grid" id="statGrid"></div>
+    <h3>各阶段进度</h3>
+    <div id="phaseStats"></div>
+    <h3>时间线（从现在到投递）</h3>
+    <ul class="tl" id="timeline"></ul>
+    <h3>数据管理</h3>
+    <div class="btns">
+      <div class="btn" onclick="exportData()">导出备份</div>
+      <div class="btn" onclick="document.getElementById('imp').click()">导入备份</div>
+      <div class="btn bad" onclick="resetAll()">清空数据</div>
+    </div>
+    <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">
+  </section>
+
+  <!-- 设置 -->
+  <section id="v-set" class="view">
+    <div class="notice">把每周投入目标设成你真能做到的数字。10–15 h/周按 12.5 h 排。</div>
+    <h3>计划开始日期（第 1 周周一）</h3>
+    <input type="date" id="startDate" onchange="saveStart()">
+    <h3>每周投入目标（小时）</h3>
+    <input type="number" id="wkTarget" min="1" max="60" step="0.5" onchange="saveTarget()">
+    <h3>投递目标</h3>
+    <input type="text" id="goalInput" onchange="saveGoal()">
+    <h3>使用说明</h3>
+    <div class="notice" style="background:#141c2e;border-color:var(--line);color:var(--dim)">
+      1. 每周打开 App，勾掉做完的任务与检验项；<br>
+      2. 状态选 ✅ 通过 / ⚠️ 及格（记欠账）/ ❌ 不通过（用机动周补）；<br>
+      3. 填本周实际投入小时数，写三行复盘；<br>
+      4. 每 4 周结束时去「题库」做整章测评并记录分数；<br>
+      5. 数据只存在这台手机里（localStorage），换机前用「导出备份」。<br><br>
+      <b>欠账不过周</b>：任何一周 ❌ 就用机动周补，绝不允许先往后学。
+    </div>
+    <h3>打不开 / 提示"会话已过期"怎么办</h3>
+    <div class="notice" style="background:#2a1a10;border-color:#78601a;color:#fed7aa">
+      <b>原因</b>：这份文件是 html，用"云盘预览 / 聊天里直接点开"的方式打开时，iOS 走的是<b>带临时链接的预览会话</b>，链接几分钟就失效，所以一会就报"会话已过期"。<b>文件本身没坏，也没有联网依赖。</b><br><br>
+      <b>根治方法（把文件真正存到手机本地）</b>：<br>
+      ① 用「文件」App 打开 -> 长按这个 html -> 选择<b>「拷贝」</b>；<br>
+      ② 进入 <b>「我的 iPhone」</b>（不是 iCloud 云盘）-> 新建文件夹如 <code>嵌入式</code> -> <b>「粘贴」</b>；<br>
+      ③ 从「我的 iPhone」里点开它 -> 会交给 Safari 渲染（不再经过云盘预览）；<br>
+      ④ Safari 底部分享 -> <b>添加到主屏幕</b>，以后从图标进，全屏、离线可用。<br><br>
+      <b>电脑上</b>：直接双击本地文件用 Chrome/Edge 打开即可，别把云盘同步目录里的文件一直放在"预览"状态。<br>
+      <b>文件名</b>：若某些 App 打不开中文名文件，先改成 <code>index.html</code> 或 <code>embed.html</code> 再试。
+    </div>
+    <h3>想更省事的方案</h3>
+    <div class="notice" style="background:#0d2233;border-color:#2a5f86;color:#bae6fd">
+      把 <code>嵌入式打卡.html</code> 传到 <b>GitHub Pages</b>（免费）得到一个网址，iPhone 用 Safari 打开该网址再"添加到主屏幕"。这样它是一个真正的在线地址，不会出现本地预览过期的问题，也能同步给同学一起用。
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button class="on" data-v="weeks"><span class="ic">📅</span>打卡</button>
+  <button data-v="quiz"><span class="ic">📝</span>题库</button>
+  <button data-v="stat"><span class="ic">📊</span>统计</button>
+  <button data-v="set"><span class="ic">⚙️</span>设置</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 数据 ============ */
+const WEEKS = [
+ {w:"1", block:"块1 · C 与 Linux 地基", phase:"阶段零", title:"指针与内存模型",
+  topics:["指针与数组","二级指针","函数指针","void*","栈/堆/全局/常量区","malloc/free","野指针与悬空指针","sizeof vs strlen"],
+  deliv:"3 个 demo（指针遍历/二级指针改指针/函数指针命令表）+ 手写 strlen/strcpy/memcpy，≥50 行自写代码",
+  tests:["能解释 char *p=\"abc\"; p[0]='x'; 为什么崩，char a[]=\"abc\" 为什么不崩","能写出返回局部数组地址的错误代码并说明后果","能手写 memcpy 并处理重叠（或说明为何需要 memmove）","❌ 若二级指针改指针写不出来，下周重做该题"]},
+ {w:"2", block:"块1 · C 与 Linux 地基", phase:"阶段零", title:"复杂声明 / 位运算 / 内存四区",
+  topics:["volatile/static/const/extern/typedef","结构体对齐与 #pragma pack","位运算与位域","编译链接四步","gcc -E/-S/-c"],
+  deliv:"观察四个中间产物 + 打印变量地址验证内存四区 + 用位域解析一个假 CAN 报文",
+  tests:["能说出 int *(*f[3])(char*) 是什么","给定结构体手算 sizeof（含对齐）与编译器结果一致","能写出把寄存器 bit3 置 1、bit5 清 0 的代码","阶段零自检 5 题答对 ≥4 题"]},
+ {w:"3", block:"块1 · C 与 Linux 地基", phase:"阶段零", title:"Makefile / gdb / Git",
+  topics:["单文件/多文件/目录结构 Makefile","gdb 断点/单步/看变量/看栈","Git 分支与合并"],
+  deliv:"一个多文件 C 项目（make 一键构建）+ 一份 gdb 调试记录 + 首个 GitHub 仓库",
+  tests:["不看模板手写多文件 Makefile（含变量/通配/clean）","用 gdb 定位一处故意写的数组越界，说出崩在哪一行","命令行完成 git init→add→commit→branch→merge→push"]},
+ {w:"4", block:"块1 · C 与 Linux 地基", phase:"阶段零", title:"Linux 从零 + 环境落地",
+  topics:["权限 755/644","find/grep/管道/重定向","ps/top/kill","vim","ssh/scp","Shell 脚本"],
+  deliv:"WSL2 + Ubuntu + VS Code 全通；1 个自动备份脚本；纯命令行完成一次查找-筛选-统计",
+  tests:["gcc -v / git --version / VS Code 能连 WSL 并编译运行","写出「递归找 .c 文件并统计 TODO 个数」的一行命令","写脚本：备份目录 + 打时间戳 + 保留最近 7 份","块1 验收：GitHub 有 1 个仓库，自检 ≥4/5"]},
+ {w:"5", block:"块2 · STM32 外设", phase:"阶段一", title:"环境与 GPIO / 中断",
+  topics:["CubeMX/CubeIDE","时钟树概念","GPIO 输入输出","外部中断 NVIC","中断服务函数写法规矩","软件/硬件消抖"],
+  deliv:"按键中断控制 LED（软件消抖与硬件消抖两种方案对比）",
+  tests:["能说出中断里为什么不能 printf/延时/干重活","用万用表测 LED 支路电流并与计算值对比","能解释上拉/下拉输入的选择依据"]},
+ {w:"6", block:"块2 · STM32 外设", phase:"阶段一", title:"定时器 / PWM / 串口",
+  topics:["定时器中断与 PSC/ARR","PWM 占空比","UART 收发与 printf 重定向","环形缓冲收数据"],
+  deliv:"PWM 呼吸灯（仪器验证占空比）+ 串口不定长接收（复用第 1 周环形缓冲）",
+  tests:["72 MHz 要 1 kHz 中断，算出 PSC/ARR 且实测误差 <1%","用逻辑分析仪抓到 PWM 波形并截图验证占空比","串口高速连续发数据不丢字节，能说明环形缓冲为何必要"]},
+ {w:"7", block:"块2 · STM32 外设", phase:"阶段一", title:"I2C / SPI / ADC / DMA",
+  topics:["I2C 时序与 MPU6050","SPI 读 Flash","ADC 采样","DMA 搬运"],
+  deliv:"串口输出 IMU 数据 + Python 上位机实时画曲线",
+  tests:["用逻辑分析仪抓出起始位/地址/ACK，指出从机地址位数","能说出 I2C 与 SPI 的取舍（线数/速率/多从机/抗干扰）","IMU 静止噪声在可解释范围内（给出实测数值）","⚠️ I2C 不通必须用仪器定位「没 ACK」还是「时序错」，不许盲改代码"]},
+ {w:"8", block:"块2 · STM32 外设", phase:"阶段一", title:"采集板项目 + A 组测评",
+  topics:["多传感器采集板","代码分层（驱动层/应用层）","README 与复现性"],
+  deliv:"GitHub 项目（接线图 + 原理 + 现象演示）+ 《检验题库》2.2 测评",
+  tests:["项目能从零按 README 复现","能画系统框图并讲 3 分钟（录音自测）","块2 测评 ≥80 分"]},
+ {w:"9", block:"块3 · RTOS", phase:"阶段一", title:"RTOS 基础与任务",
+  topics:["FreeRTOS/RT-Thread 移植","任务创建/删除/挂起","优先级与抢占","调度原理","空闲任务与钩子"],
+  deliv:"3 个任务（LED / 串口打印 / 按键响应）互不阻塞",
+  tests:["能画出任务优先级表并说明排序依据","能说出抢占式调度与时间片轮转的区别","能估算任务栈大小并说明溢出会有什么现象"]},
+ {w:"10", block:"块3 · RTOS", phase:"阶段一", title:"IPC 与同步",
+  topics:["队列/信号量/互斥量/事件组/任务通知","FromISR 版 API","临界区与关中断"],
+  deliv:"生产者-消费者模型（中断/任务生产 → 队列 → 处理任务）",
+  tests:["能在中断里安全发队列（说出用哪个 API、为什么）","信号量与互斥量的区别，什么时候必须用互斥量","能复现并解释优先级反转（L 持锁 → H 等锁 → M 抢占）"]},
+ {w:"11", block:"块3 · RTOS", phase:"阶段一", title:"稳定性与调试",
+  topics:["栈溢出检测","HardFault 定位","看门狗","内存泄漏","SEGGER RTT / 日志分级"],
+  deliv:"故意制造一次 HardFault 并完整定位（记录到笔记）",
+  tests:["能说出 HardFault 排查完整步骤（≥4 步）","能说出看门狗的三种错误用法","能测出某任务 CPU 占用率"]},
+ {w:"12", block:"块3 · RTOS", phase:"阶段一", title:"平衡车 / 循迹车 + B 组测评",
+  topics:["PID 闭环","编码器测速","IMU 姿态","电机驱动 TB6612","串口调参上位机"],
+  deliv:"能稳定站立/循迹的小车 + 调参曲线截图 + 《检验题库》2.3 测评",
+  tests:["能解释 P/I/D 作用并说出自己的整定顺序","能给出超调量与稳态误差实测数据","块3 测评 ≥80 分"]},
+ {w:"13", block:"块4 · CAN 与 UDS", phase:"阶段一", title:"CAN 原理与硬件",
+  topics:["差分与 120Ω 终端电阻","报文结构","标准帧 vs 扩展帧","位定时与波特率","仲裁机制"],
+  deliv:"两块板 CAN 收发器接线正确（含终端电阻）",
+  tests:["手算 500 kbps 位定时参数（含采样点）","能解释 CAN 为什么是无损仲裁","用示波器/逻辑分析仪抓到 CAN 差分波形并认出帧起始"]},
+ {w:"14", block:"块4 · CAN 与 UDS", phase:"阶段一", title:"CAN 通信实战",
+  topics:["CAN 初始化","周期报文发送","过滤器配置","中断接收","错误状态与总线关闭恢复"],
+  deliv:"节点 A 周期发报文，节点 B 过滤接收并回发；USB-CAN 分析仪旁路抓包",
+  tests:["用分析仪导出报文并逐字段解读一条","能说出 CAN 的 5 种错误类型与错误计数器作用","拔掉一块板电源，能解释总线上发生什么"]},
+ {w:"15", block:"块4 · CAN 与 UDS", phase:"阶段一", title:"上位机与协议设计",
+  topics:["python-can 上位机","应用层协议（ID 分配/打包解包/周期/超时）","总线负载计算"],
+  deliv:"Python 上位机实时解析 CAN 并画曲线 + 协议说明文档",
+  tests:["算出你的报文组合的总线负载百分比并说明上限经验值","协议文档能让别人照着实现（字节序/缩放/偏移）","打包解包代码全部手写，未用现成库"]},
+ {w:"16", block:"块4 · CAN 与 UDS", phase:"阶段一", title:"UDS 诊断入门 + C 组测评",
+  topics:["UDS 0x10/0x27/0x22/0x2E/0x3E","请求-响应格式","否定响应码 NRC"],
+  deliv:"用 USB-CAN 分析仪手工发 UDS 请求并收到正确响应 + 《检验题库》2.4 测评",
+  tests:["能写出「扩展会话→安全访问→读数据」完整报文序列","能说出 ≥3 个常见 NRC 及含义","块4 测评 ≥80 分"]},
+ {w:"17", block:"块5 · 系统项目与 Linux 起步", phase:"阶段一→二", title:"CAN 采集终端（上半）",
+  topics:["多路 CAN + 传感器","本地存储 Flash/SD","掉电保护","异常恢复"],
+  deliv:"终端可连续跑 24 h 不崩的初版 + 架构图",
+  tests:["能说出你系统的任务/模块划分与数据流","能讲清什么情况会出错、你怎么防"]},
+ {w:"18", block:"块5 · 系统项目与 Linux 起步", phase:"阶段一→二", title:"CAN 采集终端（下半）",
+  topics:["RTOS 多任务架构","串口/WiFi 上传","磨损均衡与校验","看门狗与心跳"],
+  deliv:"完整采集终端 + 数据文件 + 架构图",
+  tests:["断电重启后数据不丢（说出机制）","连续运行 24 h 无死机，有内存/栈占用记录","块5 项目能讲 5 分钟（背景/难点/贡献/数据）"]},
+ {w:"19", block:"块5 · 系统项目与 Linux 起步", phase:"阶段二", title:"Linux 系统编程",
+  topics:["fork/exec","pthread","互斥锁/条件变量","管道/共享内存/消息队列","Socket TCP/UDP","poll/select"],
+  deliv:"一个多线程 TCP 服务器 + 客户端（echo + 并发多连接）",
+  tests:["用 ps -eLf 看线程、用 strace 跟踪一次系统调用","能说出进程/线程区别与共享内存适用场景","服务器能同时处理 10 个连接不崩"]},
+ {w:"20", block:"块5 · 系统项目与 Linux 起步", phase:"阶段二", title:"QEMU 跑 ARM Linux + 测评",
+  topics:["QEMU 启动 ARM Linux","串口登录","第一个内核模块","insmod/rmmod"],
+  deliv:"QEMU 中成功加载自定义内核模块（dmesg 可见）+ 《检验题库》2.5 测评",
+  tests:["能说清 insmod 到入口函数被调用的过程","能说出 printk 日志级别与 dmesg 的关系","块5 测评 ≥80 分"]},
+ {w:"21", block:"块6 · 字符设备驱动", phase:"阶段二", title:"内核模块与字符设备",
+  topics:["module_init/exit","主次设备号","cdev","file_operations","mknod / class_create"],
+  deliv:"字符设备驱动，支持 open/read/write/release，用户态可读写",
+  tests:["能说清 insmod 后 /dev 节点是怎么出现的","能解释为何要用 copy_to_user/copy_from_user","能写出 rmmod 时完整资源释放清单及漏掉的后果"]},
+ {w:"22", block:"块6 · 字符设备驱动", phase:"阶段二", title:"设备树与平台驱动",
+  topics:["DTS 语法","compatible/reg/interrupts","platform_device 与 driver 匹配","GPIO 子系统 gpiod_*","/proc/device-tree"],
+  deliv:"把第 21 周硬编码驱动改成「设备树配置 + 平台驱动」",
+  tests:["能说清 compatible 如何把设备与驱动匹配起来","换一个 GPIO 引脚，只改设备树不改驱动就能工作","能查到并读懂板子上某个外设的 DTS 节点"]},
+ {w:"23", block:"块6 · 字符设备驱动", phase:"阶段二", title:"中断、并发与 poll",
+  topics:["request_irq","上半部/下半部","wait_queue","poll","自旋锁 vs 互斥量","原子操作","ioctl"],
+  deliv:"驱动在 GPIO 中断到来时唤醒用户态 read/poll（阻塞读）",
+  tests:["能说出中断上下文为何不能睡眠、不能拿互斥量","能给出自旋锁与互斥量的选择标准","用户态用 poll 等待时 CPU 占用接近 0（对比轮询版）"]},
+ {w:"24", block:"块6 · 字符设备驱动", phase:"阶段二", title:"驱动项目 + 简历 v1 + 测评",
+  topics:["驱动+用户态测试+Makefile+README","简历撰写","项目讲述"],
+  deliv:"GitHub 驱动项目 + 简历 v1（可开始零星投递练手）+ 《检验题库》2.6 测评",
+  tests:["块6 测评 ≥80 分","简历上每个项目都能讲 5 分钟（背景/难点/贡献/量化结果）","找人或 AI 模拟一次项目追问（≥5 个为什么）"]},
+ {w:"25", block:"块7 · BSP 与 SocketCAN", phase:"阶段二", title:"Buildroot 系统构建（上）",
+  topics:["交叉编译工具链","U-Boot 启动流程","内核配置与裁剪","rootfs 构建"],
+  deliv:"板子能引导到自己构建的 rootfs 并串口登录",
+  tests:["能说清 ROM→U-Boot→kernel→rootfs 的职责链条","能配置并编译出内核与设备树"]},
+ {w:"26", block:"块7 · BSP 与 SocketCAN", phase:"阶段二", title:"Buildroot 系统构建（下）",
+  topics:["根文件系统定制","开机自启应用","内核裁剪","启动时间测量"],
+  deliv:"断电重启后自动进入自己的应用",
+  tests:["内核裁剪后体积/启动时间有前后对比数据","系统断电重启自动进入应用（systemd/init 脚本）","能说出为什么推荐 systemd"]},
+ {w:"27", block:"块7 · BSP 与 SocketCAN", phase:"阶段二", title:"SocketCAN 联调",
+  topics:["socketcan 配置","cansend/candump","Linux ↔ MCU CAN 通信","数据落盘"],
+  deliv:"Linux 板与 MCU 通过 CAN 互发数据，Linux 侧程序解析并落盘",
+  tests:["能用命令行和 C 程序两种方式收发 CAN","能说出 SocketCAN 与字符设备驱动的异同","抓包验证 MCU 发的值 = Linux 收的值"]},
+ {w:"28", block:"块7 · BSP 与 SocketCAN", phase:"阶段二", title:"BSP 总结 + 测评",
+  topics:["陌生板子 bring-up 流程","项目 README 整理","八股第一轮准备"],
+  deliv:"4 个可讲项目各有一页 README + 《检验题库》2.7 测评",
+  tests:["块7 测评 ≥80 分","能独立完成一次陌生板子 bring-up","手上有 4 个可讲项目：采集板/平衡车/CAN 终端/驱动"]},
+ {w:"29", block:"块8 · 八股第一轮", phase:"面试准备", title:"C/C++ 八股",
+  topics:["指针与数组","内存布局","volatile/static/const","结构体对齐","大小端","位运算","malloc 实现思路","C++ 类/虚函数/智能指针/STL"],
+  deliv:"C/C++ 错题清零 + 《检验题库》§3A 全部过一遍",
+  tests:["《检验题库》§3A 快问快答 20 题 ≥85%","手撕 §4 前 5 题无提示写出"]},
+ {w:"30", block:"块8 · 八股第一轮", phase:"面试准备", title:"体系结构与 MCU 八股",
+  topics:["中断与异常","Cortex-M 寄存器组与栈","启动流程","Cache 一致性","内存映射","看门狗","低功耗模式"],
+  deliv:"体系结构错题清零",
+  tests:["《检验题库》§3B 20 题 ≥85%","能画出 Cortex-M 中断响应流程图并讲解"]},
+ {w:"31", block:"块8 · 八股第一轮", phase:"面试准备", title:"OS / RTOS 八股",
+  topics:["进程与线程","调度算法","同步与死锁","优先级反转","中断与任务通信","内存管理","WCET 与抖动"],
+  deliv:"OS/RTOS 错题清零",
+  tests:["《检验题库》§3C ≥85%","能连续讲清优先级反转及其两种解决方案"]},
+ {w:"32", block:"块8 · 八股第一轮", phase:"面试准备", title:"通信协议八股 + 模拟面试 1",
+  topics:["I2C/SPI/UART 故障排查","CAN 仲裁与错误处理","TCP/UDP 握手挥手","UDS"],
+  deliv:"模拟面试 1 次并录音 + 《检验题库》§3D、§5 过一遍",
+  tests:["§3D ≥85%、§5 十个调试场景都能讲 2 分钟","模拟面试自评 ≥32/40 分"]},
+ {w:"33", block:"块9 · FOC 电机控制（加分项）", phase:"阶段三", title:"电机与控制基础",
+  topics:["BLDC/PMSM 原理","三相桥与栅极驱动","Hall/编码器","电流采样","PID 三环"],
+  deliv:"电机能开环转动 + 电流采样波形",
+  tests:["能说出三相桥换相原理与死区的作用","能读出相电流采样波形并解释偏置"]},
+ {w:"34", block:"块9 · FOC 电机控制（加分项）", phase:"阶段三", title:"FOC 数学",
+  topics:["Clarke/Park 变换","SVPWM","电流环整定","反电动势观测器"],
+  deliv:"电流环闭环跑通",
+  tests:["能默写 Clarke/Park 变换并解释物理意义","能说出 SVPWM 相比 SPWM 的优势"]},
+ {w:"35", block:"块9 · FOC 电机控制（加分项）", phase:"阶段三", title:"闭环实现",
+  topics:["速度环 + 电流环","参数整定","无感启动策略"],
+  deliv:"速度闭环稳定运行，示波器抓到三相电流波形",
+  tests:["三相电流波形近似正弦（有截图）","有阶跃响应/超调/稳态误差数据"]},
+ {w:"36", block:"块9 · FOC 电机控制（加分项）", phase:"阶段三", title:"性能报告",
+  topics:["控制周期抖动测量","温升与功耗","报告撰写"],
+  deliv:"电机控制性能报告（一页数据）",
+  tests:["有控制周期抖动（µs 级）数据及改善措施","能说出无感 FOC 的观测器思路（任一）","⚠️ 若时间不够：优先保 CAN 与 RTOS，FOC 只做到能讲清原理+跑通 demo"]},
+ {w:"37", block:"块10 · 冲刺与投递", phase:"求职", title:"八股二轮 + 简历 v2",
+  topics:["错题重做","简历打磨","技能表述去水分"],
+  deliv:"八股二轮完成 + 简历 v2",
+  tests:["《检验题库》§3 全部 100 题自测 ≥85%","简历无错别字、无「熟悉/了解」堆砌，每项技能都能被追问"]},
+ {w:"38", block:"块10 · 冲刺与投递", phase:"求职", title:"手撕专项 + 讲述稿",
+  topics:["§4 十题限时手撕","项目 3 分钟版/8 分钟版讲述稿","STAR 结构"],
+  deliv:"10 道手撕题全部限时写出 + 每个项目两版讲述稿",
+  tests:["§4 十题全部无提示限时完成","录音自查讲述稿，无「嗯/然后」过多"]},
+ {w:"39", block:"块10 · 冲刺与投递", phase:"求职", title:"模拟面试 ×2",
+  topics:["技术面模拟","项目面模拟","反问环节准备"],
+  deliv:"模拟面试 2 次（技术面 + 项目面）+ 投递材料齐备",
+  tests:["技术面与项目面自评均 ≥32/40 分","准备好 2 个有深度的反问问题"]},
+ {w:"40", block:"块10 · 冲刺与投递", phase:"求职", title:"正式投递",
+  topics:["大疆/华为/比亚迪/蔚小理/联合电子/Tier1/机器人公司","投递表管理"],
+  deliv:"完成投递并建立投递记录表",
+  tests:["投递 ≥15 家并记录岗位/时间/状态","准备好面试复盘模板，每次面试后 24 h 内复盘"]}
+];
+
+const QUIZ = [
+ {g:"块1 · C 与 Linux（2.1）", pass:80, qs:[
+  ["以下输出什么？为什么？\nchar *p=\"hello\"; char a[]=\"hello\";\nprintf(\"%zu %zu\", sizeof(p), sizeof(a));","`8 6`。64 位下指针 8 字节；`a` 是数组含结尾 `\\0` 共 6 字节。"],
+  ["写宏 CLEAR_BIT(reg,bit)，并说明为何要用 do{}while(0) 包裹。","`#define CLEAR_BIT(reg,bit) do{ (reg) &= ~(1u<<(bit)); }while(0)`。避免 `if(x) MACRO; else` 展开后 else 悬空，以及无花括号时只执行第一条语句。"],
+  ["struct S{char a;int b;short c;}; 在 32 位 ARM 上 sizeof 是多少？画内存布局。","12 字节：a(0)+pad(1-3)+b(4-7)+c(8-9)+pad(10-11)，整体对齐到 4。"],
+  ["volatile 的三个必需场景，不加会怎样？","① 硬件寄存器；② 中断/信号处理与主流程共享变量；③ 多线程共享标志。不加会被编译器优化掉读写，导致死循环或读不到新值。"],
+  ["手写 memcpy，说明与 memmove 的区别。","memcpy 不处理重叠（未定义行为）；memmove 判断方向（从前或从后拷贝）支持重叠。注意返回值、`void*` 转换、按字节拷贝。"],
+  ["int *(*f[3])(char *) 是什么？用 typedef 简化。","3 个元素的数组，元素是指向函数的指针（参数 char*，返回 int*）。`typedef int *(*func_t)(char*); func_t f[3];`"],
+  ["一行命令统计当前目录所有 .c/.h 中 TODO 出现总次数。","`grep -rn \"TODO\" --include=*.c --include=*.h . | wc -l`"],
+  ["gcc -E/-S/-c 各产出什么？链接阶段做了什么？","-E→.i（预处理）、-S→.s（汇编）、-c→.o（目标文件）；链接做符号解析、重定位、合并段、生成可执行文件。"],
+  ["a.out 运行时段错误，描述用 gdb 定位的完整步骤。","编译加 -g → gdb ./a.out → run → bt 看调用栈 → frame N 切帧 → list/print 看变量 → 定位越界/空指针/野指针。"],
+  ["static 修饰全局变量、局部变量、函数三种情况的区别。","全局 static＝文件内可见（内部链接）；局部 static＝静态存储期、只初始化一次、函数退出不销毁；static 函数＝仅本文件可见。"]
+ ]},
+ {g:"块2 · STM32 外设（2.2）", pass:80, qs:[
+  ["72 MHz 下要 1 kHz 定时中断，给出 PSC 与 ARR 并验算。","f=72e6/((PSC+1)(ARR+1))=1000 → (PSC+1)(ARR+1)=72000；如 PSC=71、ARR=999。实测用示波器/翻转 IO 测误差。"],
+  ["中断服务函数为什么不能 printf/延时/做重活？正确做法？","会阻塞、丢中断、破坏实时性，printf 不可重入。正确：置标志/发队列/写环形缓冲，主循环或低优先级任务处理。"],
+  ["I2C 通信失败，用逻辑分析仪的排查顺序与三种根因。","看起始位→看地址帧与 ACK→看数据与停止位。根因：从机地址错（7 位左移）、无上拉/上拉过大、速率与时序不匹配、总线被拉低死锁（发 9 个时钟恢复）。"],
+  ["比较 I2C、SPI、UART：线数/速率/多设备/用途。","I2C：2 线、100k–400k+、靠地址多设备、传感器/EEPROM；SPI：4 线、数 MHz–数十 MHz、片选多设备、Flash/屏幕；UART：2 线点对点、异步需约定波特率、调试/模块通信。"],
+  ["PWM 频率与占空比分别由什么决定？呼吸灯为何用 PWM 而非 DAC？","频率由 ARR 与预分频决定，占空比由 CCR/ARR 决定；PWM 效率高、不发热、分辨率够，DAC 成本高且驱动能力弱。"],
+  ["串口收不定长数据为何要环形缓冲？缓冲满了怎么办？","生产（中断）与消费（主循环）速率不匹配，防丢字节。满时策略：覆盖最旧/丢弃最新/按帧丢弃并上报溢出计数，工程上要显式定义并记录。"],
+  ["DMA 的作用？举两个实际场景。","不占 CPU 搬数据；ADC 连续多通道采样、串口/SPI 大批量收发、内存到外设块传输。"],
+  ["上拉与下拉如何选择？按键接地的常见接法？","按默认电平需求与外部驱动决定：默认高用上拉、默认低用下拉；按键一端接地、另一端接 IO 开内部上拉（按下读 0）。"],
+  ["ADC 采样跳动大，列 4 种原因与对策。","① 参考电压不稳/缺滤波电容；② 输入阻抗高、采样时间短；③ 未做均值/中值滤波；④ 地线干扰/走线长；⑤ 采样时钟过快或通道串扰。"],
+  ["你的采集板代码如何分层？为什么这样分？","驱动层（外设封装）+ 中间层（缓冲/协议/状态机）+ 应用层（业务）；好处是换硬件只改驱动层、协议可单测、业务可读。"]
+ ]},
+ {g:"块3 · RTOS（2.3）", pass:80, qs:[
+  ["抢占式调度与时间片轮转的区别？什么触发任务切换？","抢占：更高优先级就绪立即切换；时间片：同优先级轮流。触发：阻塞/挂起/被抢占/时间片用完/中断唤醒更高优先级任务。"],
+  ["任务栈大小如何确定？栈溢出什么现象、怎么检测？","最坏调用深度×局部变量 + 中断嵌套开销，留 30% 余量；溢出会覆盖相邻内存导致随机崩溃或 HardFault。检测：溢出钩子、魔数填充扫描、高水位标记。"],
+  ["中断里为何必须用 FromISR 版 API？pxHigherPriorityTaskWoken 有什么用？","普通版可能阻塞/进临界区，中断上下文不能阻塞；该参数告知「唤醒了更高优先级任务」，退出中断时需 portYIELD_FROM_ISR 触发切换。"],
+  ["信号量与互斥量的区别与适用场景？","信号量：同步/计数，任何任务或中断可 give，无所有权；互斥量：有所有权、仅持有者释放、支持优先级继承，用于保护共享资源。"],
+  ["详细描述优先级反转与两种解决方案。","L 持锁→H 就绪抢占 L 但等锁被阻塞→M 就绪抢占 L→H 被 M 无限期延迟。解决：优先级继承（临时提升 L）、优先级天花板（持锁即升到最高可能优先级）。"],
+  ["临界区保护的三种方式与选择依据。","关中断（最短，与中断共享的极短临界区）、调度器挂起（任务级共享）、互斥量（可睡眠的长临界区）；能短就短。"],
+  ["如何测量某任务的 CPU 占用率？","RTOS 运行时统计（vTaskGetRunTimeStats）或空闲任务自增计数（占用 = 1 − 空闲占比），需高精度时基。"],
+  ["看门狗的三类错误用法与正确用法。","错误：在中断/高优先级任务无条件喂、喂太频繁、只在主循环喂；正确：独立任务喂狗，且所有关键任务心跳齐全时才喂。"],
+  ["详细描述 HardFault 排查步骤。","看 fault 类型与寄存器→取 LR/PC/PSR 判断线程还是中断栈→按 SP 栈回溯→用 .map/addr2line 翻译地址→查空指针/越界/栈溢出/野指针。"],
+  ["PID 三参数作用与你的整定过程。","P 反映当前误差、I 消稳态误差、D 抑超调；整定：P 增到临界振荡取 60%，再加 I 消静差，最后加 D 抑超调，看阶跃响应。"],
+  ["任务通知相比信号量的优缺点？","更快、更省内存（无需额外对象），但只能一对一（发给指定任务）。"]
+ ]},
+ {g:"块4 · CAN / UDS（2.4）", pass:80, qs:[
+  ["为什么 CAN 能无损仲裁？","显性位（0）覆盖隐性位（1）；冲突时发隐性位的节点退出转接收，下轮重发，不丢帧不破坏数据。"],
+  ["终端电阻为什么 120 Ω、要几个、不接会怎样？","匹配特性阻抗抑制反射；两端各一个共 2 个（等效 60 Ω）；不接会反射、通信不稳、距离缩短。"],
+  ["500 kbps 位定时如何计算？采样点建议范围？","位时间 = 2 µs，按 tq 分段（如 16/20 tq），配 SJW；采样点建议 75%–87.5%（CiA 推荐 87.5%）。"],
+  ["画出标准数据帧字段结构（含位数）。","SOF(1)+ID(11)+RTR(1)+IDE(1)+r0(1)+DLC(4)+Data(0–64)+CRC(15)+CRC界定(1)+ACK槽(1)+ACK界定(1)+EOF(7)+IFS(3)。"],
+  ["显性位与隐性位的电气含义？","显性：CAN_H/CAN_L 有约 2 V 压差，表示 0；隐性：两线近同电位（压差≈0），表示 1。"],
+  ["5 种错误类型及 TEC/REC 阈值行为？","位错误、填充错误、CRC 错误、格式错误、ACK 错误；TEC/REC>127 转错误被动，TEC>255 进总线关闭，需恢复流程。"],
+  ["总线负载如何计算？工程上限？","负载 = 单位时间实际传输位数/总线容量；经验控制在 30%–50% 以内，实时性要求高时更低。"],
+  ["拔掉一个节点的电源，总线上发生什么？","无人 ACK→发送方 ACK 错误→发错误帧→TEC 增加→反复后发送方也可能总线关闭；其余节点报错但通信可继续（视拓扑）。"],
+  ["写出 UDS「进扩展会话→安全访问→读数据」报文序列。","10 03 → 50 03；27 01 → 67 01 xx xx；27 02 <key> → 67 02；22 F1 90 → 62 F1 90 ..."],
+  ["列出 5 个常见 NRC 及含义。","0x11 服务不支持、0x12 子功能不支持、0x13 长度/格式错误、0x22 条件不满足、0x31 请求超范围、0x33 安全拒绝、0x78 响应挂起。"]
+ ]},
+ {g:"块5 · Linux 系统编程（2.5）", pass:80, qs:[
+  ["进程与线程的区别与适用场景？","进程是资源分配单位（独立地址空间），线程是调度单位（共享地址空间/fd）；要隔离用多进程，要共享与低开销用多线程。"],
+  ["什么时候用共享内存？需要配什么？","大数据量、高频通信；必须自行配信号量/互斥量/条件变量做同步，并处理生命周期与清理。"],
+  ["poll/select/epoll 的作用与区别？","都是 IO 多路复用；select 有 fd 上限且需重复设置、poll 数组无上限、epoll 事件驱动+内核红黑树，海量连接最优（Linux 专有）。"],
+  ["多线程 TCP 服务器有哪些架构？各自瓶颈？","每连接一线程（线程开销、连接数受限）、每连接一进程（更重）、IO 多路复用+线程池（C10K 首选）、异步 IO；瓶颈常在 fd 上限、内存、锁竞争。"],
+  ["strace 与 perf 各解决什么问题？","strace 跟踪系统调用与信号（定位卡住/文件/网络）；perf 做性能剖析（采样热点函数、CPU 周期、缓存命中）。"],
+  ["交叉编译是什么？为什么需要 sysroot？","在 x86 上生成 ARM 目标代码；需要目标板头文件与库（sysroot）才能正确链接出可运行程序。"],
+  ["解释 insmod 到模块入口函数被调用的过程。","用户态 init_module 系统调用→内核读入映射 .ko→解析 ELF 与符号→重定位→调用 module_init 注册的初始化函数。"],
+  ["printk 日志级别与 dmesg 的关系？","printk 有 0–7 级，低于 console_loglevel 才输出控制台；所有级别进内核环形缓冲，dmesg 读该缓冲。"],
+  ["僵尸进程与孤儿进程的区别与处理？","僵尸：子进程退出但父未 wait，占进程表项；孤儿：父先退出被 init/systemd 收养。处理：wait/waitpid 或正确处理 SIGCHLD。"],
+  ["你的服务器如何避免 CPU 空转？","阻塞 IO + poll/epoll 等待事件，而不是循环 recv；结合具体代码说明等待方式。"]
+ ]},
+ {g:"块6 · 字符设备驱动（2.6）", pass:80, qs:[
+  ["字符设备注册的完整流程？","alloc_chrdev_region 申请设备号→cdev_init/cdev_add→class_create+device_create 建节点→实现 file_operations→出口对称释放。"],
+  ["insmod 后 /dev 节点怎么出现？mknod 与 device_create 区别？","device_create 触发 udev/mdev 自动创建；mknod 是手工按主次设备号创建。"],
+  ["为什么不能直接在内核与用户态传指针？两个拷贝函数返回值语义？","地址空间隔离，直接解引用可能访问非法地址/提权；copy_from_user/copy_to_user 会做检查与异常处理，返回未拷贝字节数，非 0 表示失败需返回 -EFAULT。"],
+  ["ioctl 命令如何定义？为什么用宏？","_IO/_IOR/_IOW/_IOWR(type,nr,datatype)；编码方向、幻数、序号、大小，避免冲突并让内核校验方向。"],
+  ["中断上下文不能做什么？为什么？","不能睡眠（不能 kmalloc(GFP_KERNEL)、不能拿互斥量、不能等 IO）、不能访问用户空间、应尽量短；因为没有任务上下文可调度且常关中断。"],
+  ["自旋锁与互斥量的选择标准？","能否睡眠 + 持锁时间：中断/软中断或极短临界区用自旋锁（可关中断变体）；可能睡眠的长临界区用互斥量。"],
+  ["上半部/下半部为什么拆分？下半部有哪些实现？","上半部要快（减少关中断、避免丢中断），耗时或可能睡眠的工作下放；实现：软中断、tasklet、工作队列、线程化中断。"],
+  ["驱动如何支持阻塞读？中断里怎么唤醒？","定义等待队列，无数据时 wait_event_interruptible 睡眠；中断中备好数据后 wake_up_interruptible；并用 poll 支持多路等待。"],
+  ["驱动调试手段有哪些？","printk+动态调试、dmesg、/proc 与 sysfs 自建节点、ftrace、oops 栈回溯、kgdb/QEMU 单步、strace 看系统调用返回值。"],
+  ["平台驱动与字符设备的关系？","平台驱动是总线-设备匹配模型（配合设备树做资源获取与硬件初始化）；字符设备是面向用户态的接口层；实际驱动常二者兼具。"]
+ ]},
+ {g:"块7 · BSP 与 SocketCAN（2.7）", pass:80, qs:[
+  ["完整启动链条与各阶段职责？","ROM/BootROM→SPL/二级引导→U-Boot（初始化 DDR、加载内核与设备树）→内核解压初始化挂载 rootfs→init/systemd 启动服务。"],
+  ["内核裁剪怎么做？如何量化收益？","make menuconfig 关闭不需要的子系统/驱动/调试符号；量化：镜像与 .ko 体积、启动耗时、内存占用。"],
+  ["设备树为什么出现？解决什么问题？","把硬件描述从内核代码抽出，一个内核镜像支持多种板子，减少板级代码与重编译。"],
+  ["SocketCAN 的使用方式（命令行 + 编程）？","命令行：ip link set can0 up type can bitrate 500000、candump、cansend；编程：socket(PF_CAN,SOCK_RAW,CAN_RAW)+bind+read/write，可设过滤器。"],
+  ["陌生板子 bring-up 的标准步骤？","供电与时钟→串口有输出→能进 Bootloader/系统→存储与网络→逐个验证外设→记录问题与解法。"],
+  ["系统起来后新外设不工作，排查顺序？","设备树节点是否存在且 okay→compatible 是否匹配→驱动是否编译进内核/加载→引脚复用与时钟→供电与外部电路。"],
+  ["如何让应用开机自启？推荐方式？","systemd service（推荐，依赖管理/重启策略/日志）或 init 脚本/rc.local。"],
+  ["交叉编译的库依赖如何处理？","用目标板 sysroot 让链接器找到目标库；或静态链接；或把 .so 放进 rootfs 并设 LD_LIBRARY_PATH。"],
+  ["SocketCAN 与字符设备驱动写 CAN 的异同？","相同：都收发 CAN 帧；不同：SocketCAN 走网络协议栈、统一 socket 接口、可用标准工具与过滤器；字符设备驱动需自实现 IOCTL/队列且各厂不通用。"],
+  ["Linux 与 MCU 在你的项目里如何分工？为什么？","MCU 负责硬实时（µs 级控制、安全联锁），Linux 负责复杂逻辑/网络/存储/UI；依据是实时性要求与控制周期抖动容忍度。"]
+ ]},
+ {g:"手撕代码（§4）", pass:100, qs:[
+  ["手写 strlen / strcpy / strcmp","注意空指针与 \\0、返回未拷贝长度、const 修饰、边界（dst 空间不足需调用方保证）。"],
+  ["手写 memcpy + memmove","memmove 判断重叠方向：dst<src 从前拷，dst>src 从后拷；按字节拷贝，处理返回值。"],
+  ["单链表：插入/删除/反转/找中间节点","反转用三指针（prev/cur/next）；找中间用快慢指针；头结点变更要注意二级指针或返回新头。"],
+  ["环形缓冲：init/put/get/count/full","满与空区分：留一格空位（(w+1)%N==r 为满）或加计数；读写指针各自只被一方修改，单生产单消费可无锁。"],
+  ["判断链表有环 + 找入口","快慢指针相遇则有环；相遇后一指针回头、两指针同速前进，再次相遇即入口。"],
+  ["位操作：置位/清位/取位/统计 1 个数/反转位","用 unsigned 避免符号位；统计 1 用 n &= n-1 循环；反转按位搬移。"],
+  ["实现 atoi（含正负号、溢出、非法字符）","跳过空白→取符号→逐位累加并判断溢出→遇到非法字符停止；返回策略要明确（clamp 或错误码）。"],
+  ["大小端判断 + 32 位字节序转换","联合体或取 int 首字节判断；转换用移位与掩码拼装，注意写出可读的宏。"],
+  ["算结构体 sizeof 并重排优化","按成员对齐规则推导 padding；把大对齐成员排前面可减小体积（或按大小降序）。"],
+  ["C++ 简化版引用计数智能指针","构造计数=1、拷贝++、析构--，为 0 则 delete；考虑自赋值；说明引用计数的线程安全问题。"]
+ ]}
+];
+
+const PHASES = [
+ ["阶段零 · C 与 Linux 地基", [1,4]],
+ ["阶段一 · 嵌入式基础（MCU/RTOS/CAN）", [5,18]],
+ ["阶段二 · 嵌入式 Linux 与驱动", [19,28]],
+ ["面试准备 · 八股与模拟面试", [29,32]],
+ ["阶段三 · FOC 电机控制（加分项）", [33,36]],
+ ["求职冲刺 · 手撕与投递", [37,40]]
+];
+
+/* ============ 存储 ============ */
+let store = {weeks:{}, quiz:{}, settings:{start:"", target:12.5, goal:"研二寒假投递大厂实习"}};
+const LS = "embed_checkin_v1";
+function load(){
+  try{ const s = localStorage.getItem(LS); if(s){ const o = JSON.parse(s); store = Object.assign(store, o);
+    store.settings = Object.assign({start:"",target:12.5,goal:"研二寒假投递大厂实习"}, o.settings||{});
+    store.weeks = o.weeks||{}; store.quiz = o.quiz||{}; } }catch(e){}
+  if(!store.settings.start){
+    const d = new Date(); const day = d.getDay(); const diff = (day===0?-6:1-day);
+    d.setDate(d.getDate()+diff);
+    store.settings.start = d.toISOString().slice(0,10); save();
+  }
+}
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(store)); }catch(e){ toast("存储失败，请用导出备份"); } }
+function wk(i){ if(!store.weeks[i]) store.weeks[i]={tasks:[],tests:[],status:"",hours:"",note:""}; return store.weeks[i]; }
+
+/* ============ 工具 ============ */
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),1800); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function weekDates(i){ // i = 1..40
+  const s = store.settings.start; if(!s) return "";
+  const d0 = new Date(s+"T00:00:00"); const a = new Date(d0); a.setDate(a.getDate()+(i-1)*7);
+  const b = new Date(a); b.setDate(b.getDate()+6);
+  return `${a.getMonth()+1}/${a.getDate()}–${b.getMonth()+1}/${b.getDate()}`;
+}
+function startDateObj(){ return new Date(store.settings.start+"T00:00:00"); }
+function currentWeek(){
+  const days = Math.floor((Date.now()-startDateObj().getTime())/86400000);
+  return Math.min(40, Math.max(1, Math.floor(days/7)+1));
+}
+function weekOK(i){ const d=store.weeks[i]; if(!d) return false;
+  const W=WEEKS[i-1]; return d.status==="ok" || (d.tasks||[]).filter(Boolean).length>=W.topics.length; }
+
+/* ============ 渲染：打卡 ============ */
+function render(){
+  const cur = currentWeek();
+  document.getElementById('weekNow').textContent = cur;
+  const done = WEEKS.filter((_,k)=>weekOK(k+1)).length;
+  document.getElementById('weekDone').textContent = done;
+  document.getElementById('topBar').style.width = (done/40*100).toFixed(1)+'%';
+  document.getElementById('goalTxt').textContent = store.settings.goal;
+
+  // 投递倒计时
+  const d40 = new Date(startDateObj()); d40.setDate(d40.getDate()+40*7);
+  const left = Math.ceil((d40-Date.now())/86400000);
+  const leftWeeks = 40-cur;
+  document.getElementById('startNotice').innerHTML =
+    left>0 ? `距第 40 周（正式投递）还有 <b>${leftWeeks} 周</b>（约 ${Math.floor(left/30)} 个月），投递窗口目标：<b>${d40.getFullYear()}年${d40.getMonth()+1}月初</b>。本周应为第 <b>${cur}</b> 周。`
+           : `计划周期已结束，进入投递与面试阶段。`;
+
+  // 按块分组
+  const blocks = [];
+  WEEKS.forEach((W,k)=>{ const i=k+1; let b=blocks.find(x=>x.n===W.block);
+    if(!b){ b={n:W.block, list:[]}; blocks.push(b); } b.list.push({W,i}); });
+
+  document.getElementById('weekList').innerHTML = blocks.map(b=>{
+    const okN = b.list.filter(x=>weekOK(x.i)).length;
+    return `<details class="blk" ${b.list.some(x=>x.i===cur)?"open":""}>
+      <summary>${b.n}<span class="n">${okN}/${b.list.length} 周完成</span></summary>
+      <div class="inner">${b.list.map(({W,i})=>cardHTML(W,i,cur)).join('')}</div>
+    </details>`;
+  }).join('');
+}
+
+function cardHTML(W,i,cur){
+  const d = wk(i); const ok = weekOK(i);
+  const statusPill = d.status==="ok" ? '<span class="pill ok">✅ 通过</span>'
+    : d.status==="warn" ? '<span class="pill warn">⚠️ 及格（记欠账）</span>'
+    : d.status==="bad" ? '<span class="pill bad">❌ 不通过</span>'
+    : ok ? '<span class="pill ok">已达标</span>' : '<span class="pill">未开始</span>';
+  const curPill = (i===cur) ? '<span class="pill pri">本周</span>' : '';
+  const tDone = (d.tasks||[]).filter(Boolean).length, tAll = W.topics.length;
+  const kDone = (d.tests||[]).filter(Boolean).length, kAll = W.tests.length;
+
+  return `<div class="card ${(ok&&d.status!=='bad')?'done':(i===cur?'open':'')}" id="c${i}">
+    <div class="card-h" onclick="toggle(${i})">
+      <div class="wk">第${W.w}周</div>
+      <div class="card-t">${W.title}</div>
+      <div class="chev" id="ch${i}">›</div>
+    </div>
+    <div class="card-m">${W.phase} · ${weekDates(i)} · 任务 ${tDone}/${tAll} · 检验 ${kDone}/${kAll} ${statusPill}${curPill}</div>
+    <div class="body" id="b${i}" style="display:none">
+      <div class="sec-t">必做任务</div>
+      ${W.topics.map((t,k)=>`<label class="chk"><input type="checkbox" ${d.tasks[k]?"checked":""} onchange="setTask(${i},${k},this.checked)"><span>${t}</span></label>`).join('')}
+      <div class="sec-t">交付物</div>
+      <div class="deliv">${W.deliv}</div>
+      <div class="sec-t">检验标准（打勾前要能当场演示或口述 30 秒）</div>
+      ${W.tests.map((t,k)=>`<label class="chk"><input type="checkbox" ${d.tests[k]?"checked":""} onchange="setTest(${i},${k},this.checked)"><span>${t}</span></label>`).join('')}
+      <div class="sec-t">本周状态</div>
+      <div class="btns">
+        <div class="btn ok" onclick="setStatus(${i},'ok')">✅ 通过</div>
+        <div class="btn warn" onclick="setStatus(${i},'warn')">⚠️ 及格</div>
+        <div class="btn bad" onclick="setStatus(${i},'bad')">❌ 不通过</div>
+      </div>
+      <div class="sec-t">投入与复盘</div>
+      <div class="row"><span class="lbl">实际</span><input type="number" step="0.5" min="0" placeholder="小时" value="${d.hours||''}" onchange="setField(${i},'hours',this.value)"><span class="lbl">目标 ${store.settings.target}h</span></div>
+      <textarea placeholder="卡住最久的问题 / 根因与解法 / 欠账（3 行）" onchange="setField(${i},'note',this.value)">${d.note||''}</textarea>
+    </div>
+  </div>`;
+}
+function toggle(i){
+  const b=document.getElementById('b'+i), c=document.getElementById('ch'+i);
+  const open = b.style.display!=='none';
+  b.style.display = open?'none':'block';
+  c.classList.toggle('r', !open);
+}
+/* 记录在重绘前仍展开的周与块，重绘后恢复展开状态 */
+function snapshotOpen(){
+  const bodies=[], blks=[];
+  document.querySelectorAll('.body').forEach(e=>{ if(e.style.display!=='none') bodies.push(e.id); });
+  document.querySelectorAll('details.blk').forEach((e,k)=>{ if(e.open) blks.push(k); });
+  return {bodies, blks};
+}
+function restoreOpen(snap){
+  (snap.bodies||[]).forEach(id=>{ const e=document.getElementById(id); if(e) e.style.display='block';
+    const c=document.getElementById('ch'+id.slice(1)); if(c) c.classList.add('r'); });
+  document.querySelectorAll('details.blk').forEach((e,k)=>{ if((snap.blks||[]).includes(k)) e.open=true; });
+}
+function rerenderKeep(i){
+  const snap = snapshotOpen();
+  renderStat(); render();
+  restoreOpen(snap);
+}
+function setTask(i,k,v){ const d=wk(i); d.tasks[k]=v; save(); rerenderKeep(i); }
+function setTest(i,k,v){ const d=wk(i); d.tests[k]=v; save(); rerenderKeep(i); }
+function setStatus(i,s){ const d=wk(i); d.status = (d.status===s?'':s); save();
+  toast(d.status==='ok'?'第'+i+'周：通过 ✅':d.status==='warn'?'第'+i+'周：及格（已记欠账）':d.status==='bad'?'第'+i+'周：不通过，用机动周补':'已清除状态');
+  rerenderKeep(i); }
+function setField(i,f,v){ wk(i)[f]=v; save(); }
+
+/* ============ 渲染：题库 ============ */
+function renderQuiz(){
+  document.getElementById('quizGroups').innerHTML = QUIZ.map((G,gi)=>{
+    const rec = store.quiz[gi]||{};
+    return `<details class="blk">
+      <summary>${G.g}<span class="n">${G.qs.length} 题 · 通过线 ${G.pass} 分${rec.score!=null?` · 已测 ${rec.score} 分`:''}</span></summary>
+      <div class="inner">
+        ${G.qs.map((q,qi)=>`<div class="q" id="q${gi}_${qi}">
+          <div class="qh" onclick="document.getElementById('q${gi}_${qi}').classList.toggle('show')">
+            <div class="num">${qi+1}</div><div class="qt">${q[0].replace(/\n/g,'<br>')}</div>
+          </div>
+          <div class="qa"><b>要点：</b>${q[1]}</div>
+          <div class="btns"><div class="btn" onclick="document.getElementById('q${gi}_${qi}').classList.toggle('show')">看答案</div></div>
+        </div>`).join('')}
+        <div class="row"><span class="lbl">本次得分</span>
+          <input type="number" id="score${gi}" min="0" max="100" placeholder="0–100" value="${rec.score!=null?rec.score:''}" onchange="setScore(${gi},this.value)">
+          <span class="lbl">${rec.date||''}</span></div>
+        <div class="btns"><div class="btn pri" onclick="setScore(${gi},document.getElementById('score${gi}').value)">保存分数</div></div>
+      </div>
+    </details>`;
+  }).join('');
+}
+function setScore(gi,v){
+  if(v===''){ delete store.quiz[gi]; } else {
+    store.quiz[gi] = {score: Number(v), date: new Date().toISOString().slice(0,10)};
+  }
+  save();
+  toast(v===''?'已清除':'已记录 '+v+' 分'+(Number(v)<QUIZ[gi].pass?'（未过线，记入错题本）':' ✅ 通过'));
+  const snap = snapshotOpen();
+  renderQuiz(); renderStat();
+  restoreOpen(snap);
+}
+
+/* ============ 渲染：统计 ============ */
+function renderStat(){
+  const cur = currentWeek();
+  const done = WEEKS.filter((_,k)=>weekOK(k+1)).length;
+  let hours=0, bad=0, warn=0;
+  WEEKS.forEach((_,k)=>{ const d=store.weeks[k+1]; if(!d) return;
+    hours += Number(d.hours||0); if(d.status==='bad') bad++; if(d.status==='warn') warn++; });
+  let tasksDone=0, tasksAll=0, testsDone=0, testsAll=0;
+  WEEKS.forEach((W,k)=>{ const d=store.weeks[k+1]||{};
+    tasksAll+=W.topics.length; tasksDone+=(d.tasks||[]).filter(Boolean).length;
+    testsAll+=W.tests.length; testsDone+=(d.tests||[]).filter(Boolean).length; });
+  const quizzes = Object.keys(store.quiz).length;
+
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat"><div class="v">${done}<span style="font-size:13px;color:var(--dim)">/40</span></div><div class="l">已完成周数</div></div>
+    <div class="stat"><div class="v">${hours.toFixed(1)}<span style="font-size:13px;color:var(--dim)"> h</span></div><div class="l">累计投入（目标 ${(cur*store.settings.target).toFixed(0)} h）</div></div>
+    <div class="stat"><div class="v">${tasksAll?Math.round(tasksDone/tasksAll*100):0}<span style="font-size:13px;color:var(--dim)">%</span></div><div class="l">任务完成 ${tasksDone}/${tasksAll}</div></div>
+    <div class="stat"><div class="v">${testsAll?Math.round(testsDone/testsAll*100):0}<span style="font-size:13px;color:var(--dim)">%</span></div><div class="l">检验通过 ${testsDone}/${testsAll}</div></div>
+    <div class="stat"><div class="v" style="color:var(--warn)">${warn}</div><div class="l">⚠️ 及格（欠账）</div></div>
+    <div class="stat"><div class="v" style="color:var(--bad)">${bad}</div><div class="l">❌ 不通过（须补）</div></div>
+    <div class="stat"><div class="v">${quizzes}<span style="font-size:13px;color:var(--dim)">/8</span></div><div class="l">已记录测评</div></div>
+    <div class="stat"><div class="v">${Math.max(0,40-cur)}</div><div class="l">距投递剩余周数</div></div>`;
+
+  document.getElementById('phaseStats').innerHTML = PHASES.map(([name,[a,b]])=>{
+    let wDone=0; for(let i=a;i<=b;i++) if(weekOK(i)) wDone++;
+    const n=b-a+1, pct=Math.round(wDone/n*100);
+    return `<div class="card" style="padding:11px 13px">
+      <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:600">
+        <span>${name}</span><span style="color:var(--dim)">${wDone}/${n} 周</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div></div>`; }).join('');
+
+  const dQ = new Date(startDateObj()); dQ.setDate(dQ.getDate()+24*7);
+  const dS = new Date(startDateObj()); dS.setDate(dS.getDate()+32*7);
+  const d40 = new Date(startDateObj()); d40.setDate(d40.getDate()+40*7);
+  const f = d=>`${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())}`;
+  const tl = [
+    ["第24周", "简历 v1 完成，可开始零星投递练手", f(dQ)],
+    ["第32周", "八股一轮 + 模拟面试 1 次", f(dS)],
+    ["第40周", "正式投递大厂嵌入式实习", f(d40)],
+    ["第41+周", "春招实习高峰（2–4 月），按面试反馈定向补漏", ""]
+  ];
+  document.getElementById('timeline').innerHTML = tl.map(([a,b,c])=>
+    `<li><span class="t">${a}</span><span>${b}<br><span style="color:var(--dim2);font-size:11.5px">${c}</span></span></li>`).join('');
+}
+
+/* ============ 设置与数据 ============ */
+function renderSet(){
+  document.getElementById('startDate').value = store.settings.start;
+  document.getElementById('wkTarget').value = store.settings.target;
+  document.getElementById('goalInput').value = store.settings.goal;
+}
+function saveStart(){ store.settings.start = document.getElementById('startDate').value; save(); rerenderKeep(); toast('已更新：第 1 周 = '+store.settings.start); }
+function saveTarget(){ store.settings.target = Number(document.getElementById('wkTarget').value)||12.5; save(); toast('每周目标已设为 '+store.settings.target+' h'); }
+function saveGoal(){ store.settings.goal = document.getElementById('goalInput').value; save(); render(); toast('已保存目标'); }
+function exportData(){
+  const blob = new Blob([JSON.stringify(store,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = '嵌入式打卡备份_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); toast('已导出，请存到「文件」App');
+}
+function importData(inp){
+  const f = inp.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ try{ const o=JSON.parse(r.result); store=Object.assign(store,o);
+    store.settings=Object.assign({start:"",target:12.5,goal:"研二寒假投递大厂实习"},o.settings||{});
+    store.weeks=o.weeks||{}; store.quiz=o.quiz||{}; save(); renderAll(); toast('导入成功'); }
+    catch(e){ toast('文件格式不对'); } };
+  r.readAsText(f); inp.value='';
+}
+function resetAll(){
+  if(!confirm('确定清空全部打卡数据？建议先导出备份。')) return;
+  store = {weeks:{},quiz:{},settings:{start:store.settings.start,target:store.settings.target,goal:store.settings.goal}};
+  save(); renderAll(); toast('已清空');
+}
+
+/* ============ 导航 ============ */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+b.dataset.v).classList.add('active');
+  if(b.dataset.v==='stat') renderStat();
+  if(b.dataset.v==='set') renderSet();
+  if(b.dataset.v==='quiz') renderQuiz();
+  window.scrollTo(0,0);
+});
+
+function renderAll(){ render(); renderQuiz(); renderStat(); renderSet(); }
+load(); renderAll();
+</script>
+</body>
+</html>

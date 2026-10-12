@@ -1,0 +1,19 @@
+{
+  "name": "嵌入式学习打卡",
+  "short_name": "嵌入式打卡",
+  "description": "40 周嵌入式学习计划打卡与自测",
+  "start_url": "嵌入式学习App.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230ea5e9'/%3E%3Cpath d='M133 271 L220 358 L384 164' stroke='%2306202e' stroke-width='56' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
