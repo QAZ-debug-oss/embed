@@ -5,165 +5,166 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="嵌入式打卡">
+<meta name="apple-mobile-web-app-title" content="嵌入式学习">
 <meta name="theme-color" content="#0b1220">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230ea5e9'/%3E%3Ctext x='90' y='120' font-size='90' text-anchor='middle' fill='white' font-family='sans-serif'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
-<title>嵌入式学习打卡</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230ea5e9'/%3E%3Ctext x='90' y='122' font-size='96' text-anchor='middle' fill='%2306202e' font-family='sans-serif' font-weight='bold'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<title>嵌入式学习 · 打卡与刷题</title>
 <style>
 :root{
-  --bg:#0b1220; --bg2:#0f172a; --card:#151f33; --card2:#1b2740;
-  --line:#243049; --txt:#e7edf7; --dim:#8fa0bd; --dim2:#64748b;
-  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --pri:#38bdf8; --pri2:#0ea5e9;
-  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#0b1220;--card:#151f33;--card2:#1b2740;--line:#243049;--txt:#e7edf7;--dim:#8fa0bd;--dim2:#64748b;
+  --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--pri:#38bdf8;--pri2:#0ea5e9;
+  --code:#0a0f1a;--amber:#f59e0b;--amber2:#fbbf24;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
-  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;
-  font-size:15px;line-height:1.5}
-body{padding-bottom:calc(76px + var(--safe-bottom))}
-header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0b1220ee,#0b1220cc);
-  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:calc(var(--safe-top) + 10px) 14px 10px}
-h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+html,body{margin:0;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.5}
+body{padding-bottom:calc(78px + var(--sb))}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0b1220f5,#0b1220d9);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:calc(var(--st) + 8px) 12px 8px}
+h1{margin:0 0 7px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:7px}
 h1 .dot{width:8px;height:8px;border-radius:50%;background:var(--pri);box-shadow:0 0 10px var(--pri)}
-.sub{margin-top:4px;font-size:12px;color:var(--dim);display:flex;gap:10px;flex-wrap:wrap}
-.sub b{color:var(--pri);font-weight:600}
-main{padding:12px 12px 20px;max-width:720px;margin:0 auto}
+.modes{display:flex;gap:6px;background:#0d1526;padding:4px;border-radius:11px;border:1px solid var(--line)}
+.modes button{flex:1;padding:8px 6px;border:0;border-radius:8px;background:none;color:var(--dim);
+  font-size:13px;font-weight:600;font-family:inherit}
+.modes button.on{background:var(--pri2);color:#04202e}
+.modes button.on.amber{background:var(--amber);color:#12100b}
+.sub{margin-top:7px;font-size:11.5px;color:var(--dim);display:flex;gap:10px;flex-wrap:wrap}
+.sub b{color:var(--pri)}
+.bar{height:6px;border-radius:3px;background:#1e293b;overflow:hidden;margin-top:7px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--pri2),var(--ok));transition:width .35s}
+main{padding:12px 12px 20px;max-width:760px;margin:0 auto}
 .view{display:none}.view.active{display:block}
-/* 进度条 */
-.bar{height:6px;border-radius:3px;background:#1e293b;overflow:hidden;margin-top:8px}
-.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--pri2),var(--ok));border-radius:3px;transition:width .35s}
-/* 卡片 */
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}
 .card.done{border-color:#1f6f45;background:linear-gradient(180deg,#132a22,#151f33)}
 .card.open{border-color:#2a5f86}
 .card-h{display:flex;align-items:center;gap:9px}
-.wk{flex:0 0 auto;min-width:52px;height:34px;border-radius:9px;background:var(--card2);
-  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--pri);padding:0 8px}
+.wk{min-width:52px;height:34px;border-radius:9px;background:var(--card2);display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;color:var(--pri);padding:0 8px;flex:0 0 auto}
 .card.done .wk{background:#14532d;color:#86efac}
 .card-t{flex:1;font-weight:600;font-size:14.5px;line-height:1.35}
-.card-m{font-size:11.5px;color:var(--dim2);margin:5px 0 0 0}
-.chev{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:var(--dim2);
-  transition:transform .2s;flex:0 0 auto}
+.card-m{font-size:11.5px;color:var(--dim2);margin-top:5px}
+.chev{width:24px;display:flex;justify-content:center;color:var(--dim2);transition:transform .2s}
 .chev.r{transform:rotate(90deg)}
-.body{margin-top:11px;border-top:1px dashed var(--line);padding-top:11px}
-.sec-t{font-size:11.5px;font-weight:700;color:var(--dim);letter-spacing:.6px;margin:11px 0 6px}
+.sec-t{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.6px;margin:11px 0 6px}
 .deliv{background:#0e1a2e;border-left:3px solid var(--pri);border-radius:6px;padding:8px 10px;font-size:13px;color:#cfe0f5}
-.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-radius:9px;cursor:pointer}
-.chk:active{background:#1c2a44}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-radius:9px}
 .chk input{appearance:none;width:21px;height:21px;flex:0 0 auto;margin:0;border:1.5px solid #3b4a66;
-  border-radius:6px;background:#0d1526;position:relative;transition:.15s}
+  border-radius:6px;background:#0d1526;position:relative}
 .chk input:checked{background:var(--ok);border-color:var(--ok)}
 .chk input:checked::after{content:"";position:absolute;left:6px;top:2px;width:6px;height:11px;
   border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
-.chk span{font-size:13.5px;color:#dbe6f6;flex:1}
+.chk span{font-size:13.5px;flex:1}
 .chk input:checked + span{color:var(--dim2);text-decoration:line-through}
-textarea,input[type=date],input[type=number],input[type=text],select{
-  width:100%;background:#0d1526;border:1px solid var(--line);color:var(--txt);border-radius:9px;
-  padding:9px 10px;font-size:13.5px;font-family:inherit}
-textarea{min-height:56px;resize:vertical}
+textarea,input[type=date],input[type=number],input[type=text],select{width:100%;background:#0d1526;
+  border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px;font-size:13.5px;font-family:inherit}
+textarea{min-height:54px}
 .row{display:flex;gap:8px;align-items:center;margin-top:8px}
-.row>*{flex:1}
-.row .lbl{flex:0 0 auto;font-size:12.5px;color:var(--dim)}
-/* 状态胶囊 */
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 9px;border-radius:20px;
+.row>*{flex:1}.row .lbl{flex:0 0 auto;font-size:12px;color:var(--dim)}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:20px;
   border:1px solid var(--line);color:var(--dim);background:#0d1526}
 .pill.ok{color:#86efac;border-color:#1f6f45;background:#0f2a1d}
 .pill.warn{color:#fcd34d;border-color:#78601a;background:#2a2410}
 .pill.bad{color:#fca5a5;border-color:#7f2d2d;background:#2a1414}
 .pill.pri{color:#7dd3fc;border-color:#2a5f86;background:#0d2233}
 .btns{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
-.btn{flex:1;min-width:82px;text-align:center;padding:10px;border-radius:10px;border:1px solid var(--line);
-  background:var(--card2);color:var(--txt);font-size:13.5px;font-weight:600;cursor:pointer}
-.btn:active{transform:scale(.97)}
+.btn{flex:1;min-width:80px;text-align:center;padding:10px;border-radius:10px;border:1px solid var(--line);
+  background:var(--card2);color:var(--txt);font-size:13px;font-weight:600}
 .btn.ok{background:#14532d;border-color:#1f6f45;color:#bbf7d0}
 .btn.warn{background:#3a2c0c;border-color:#78601a;color:#fde68a}
 .btn.bad{background:#3a1616;border-color:#7f2d2d;color:#fecaca}
 .btn.pri{background:var(--pri2);border-color:var(--pri);color:#04202e}
-/* 折叠块 */
 details.blk{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
-details.blk>summary{padding:12px 14px;font-weight:700;font-size:14px;cursor:pointer;list-style:none;
-  display:flex;align-items:center;gap:8px}
+details.blk>summary{padding:12px 13px;font-weight:700;font-size:13.5px;list-style:none;display:flex;gap:8px;align-items:center}
 details.blk>summary::-webkit-details-marker{display:none}
-details.blk>summary .n{font-size:11px;color:var(--dim2);font-weight:500;margin-left:auto}
+details.blk>summary .n{font-size:11px;color:var(--dim2);font-weight:500;margin-left:auto;text-align:right}
 details.blk .inner{padding:0 12px 12px}
-/* 题库 */
+.notice{background:#0d2233;border:1px solid #2a5f86;border-radius:12px;padding:11px 13px;font-size:12.5px;
+  color:#bae6fd;margin-bottom:11px;line-height:1.6}
+.notice.a{background:#241a0d;border-color:#78601a;color:#fde68a}
+.notice.g{background:#141c2e;border-color:var(--line);color:var(--dim)}
+h3{font-size:13.5px;margin:15px 0 8px;color:var(--dim);letter-spacing:.3px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px}
+.stat .v{font-size:22px;font-weight:800;color:var(--pri);letter-spacing:-.5px}
+.stat .l{font-size:11px;color:var(--dim);margin-top:3px}
 .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:9px}
 .q .qh{display:flex;gap:8px;align-items:flex-start}
 .q .num{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:var(--card2);color:var(--pri);
   font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.q .qt{flex:1;font-size:14px;font-weight:600;line-height:1.5}
+.q .qt{flex:1;font-size:14px;font-weight:600}
 .q .qa{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);font-size:13px;color:#a7f3d0;display:none}
 .q.show .qa{display:block}
-.q .qa b{color:#6ee7b7}
-/* 统计 */
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px}
-.stat .v{font-size:24px;font-weight:800;color:var(--pri);letter-spacing:-.5px}
-.stat .l{font-size:11.5px;color:var(--dim);margin-top:3px}
-.tl{list-style:none;padding:0;margin:8px 0 0}
-.tl li{display:flex;gap:9px;font-size:13px;padding:7px 0;border-bottom:1px solid #1a2438;align-items:flex-start}
-.tl li:last-child{border:0}
-.tl .t{flex:0 0 auto;color:var(--dim2);font-size:11.5px;min-width:44px;padding-top:2px}
-/* 底部导航 */
-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;
-  background:#0d1526ee;backdrop-filter:blur(14px);border-top:1px solid var(--line);
-  padding:6px 4px calc(6px + var(--safe-bottom))}
-nav button{flex:1;background:none;border:0;color:var(--dim2);font-size:10.5px;padding:5px 0;
-  display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;cursor:pointer}
+.io{background:#0e1a2e;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13px;margin-top:6px}
+.io .k{color:var(--pri);font-weight:700}
+pre{background:var(--code);border:1px solid var(--line);border-radius:9px;padding:11px;overflow-x:auto;
+  font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#ffe9be;white-space:pre;margin:6px 0}
+.hint{background:#1a1a0d;border-left:3px solid var(--warn);border-radius:7px;padding:9px 11px;font-size:13px;color:#fde68a}
+/* C 模式（琥珀色） */
+body.amber{--pri:#f59e0b;--pri2:#fbbf24;--ok:#22c55e}
+body.amber .tag.amber{border-color:#78601a;color:var(--amber2)}
+.tag{font-size:10.5px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--dim);background:var(--card2)}
+.tag.t1{color:#86efac;border-color:#2f6b45}.tag.t2{color:#7dd3fc;border-color:#2a5f86}
+.tag.t3{color:#fcd34d;border-color:#78601a}.tag.t4{color:#f0abfc;border-color:#6b2f7a}
+.tag.t5{color:#fca5a5;border-color:#7f2d2d}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tierRow{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.tierRow .h{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:7px}
+.tierRow .h span:last-child{color:var(--dim);font-weight:500}
+.filters{display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch}
+.filters button{flex:0 0 auto;padding:7px 13px;border-radius:20px;border:1px solid var(--line);background:var(--card);
+  color:var(--dim);font-size:12.5px;font-family:inherit;font-weight:600}
+.filters button.on{background:var(--amber);border-color:var(--amber);color:#12100b}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:#0d1526f0;backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);padding:6px 4px calc(6px + var(--sb))}
+nav button{flex:1;background:none;border:0;color:var(--dim2);font-size:10.5px;padding:5px 0;display:flex;
+  flex-direction:column;align-items:center;gap:3px;font-family:inherit}
 nav button .ic{font-size:19px;line-height:1}
 nav button.on{color:var(--pri)}
-.notice{background:#0d2233;border:1px solid #2a5f86;border-radius:12px;padding:11px 13px;font-size:13px;
-  color:#bae6fd;margin-bottom:11px;line-height:1.6}
-h3{font-size:14px;margin:16px 0 8px;color:var(--dim);letter-spacing:.4px}
-.toast{position:fixed;left:50%;bottom:calc(88px + var(--safe-bottom));transform:translateX(-50%);
-  background:#0b1220f2;border:1px solid var(--pri);color:#e0f2fe;padding:9px 16px;border-radius:22px;
-  font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:88vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(90px + var(--sb));transform:translateX(-50%);background:#0b1220f2;
+  border:1px solid var(--pri);color:#e0f2fe;padding:9px 16px;border-radius:22px;font-size:13px;opacity:0;
+  transition:opacity .25s;pointer-events:none;z-index:60;max-width:88vw;text-align:center}
 .toast.on{opacity:1}
+.tl{list-style:none;padding:0;margin:8px 0 0}
+.tl li{display:flex;gap:9px;font-size:13px;padding:7px 0;border-bottom:1px solid #1a2438}
+.tl li:last-child{border:0}
+.tl .t{flex:0 0 auto;color:var(--dim2);font-size:11.5px;min-width:44px;padding-top:2px}
+code{background:#2a2317;padding:1px 5px;border-radius:5px;font-size:12.5px;font-family:ui-monospace,Menlo,monospace;color:#ffe9be}
 </style>
 </head>
 <body>
 <header>
-  <h1><span class="dot"></span>嵌入式学习打卡</h1>
-  <div class="sub">
-    <span>目标：<b id="goalTxt">研二寒假投递大厂实习</b></span>
-    <span>第 <b id="weekNow">1</b>/40 周</span>
-    <span>已完成 <b id="weekDone">0</b> 周</span>
+  <h1><span class="dot"></span><span id="appTitle">嵌入式学习打卡</span></h1>
+  <div class="modes">
+    <button id="mEmbed" class="on" onclick="setMode('embed')">📅 嵌入式打卡</button>
+    <button id="mC" onclick="setMode('c')">💻 C 刷题</button>
   </div>
+  <div class="sub" id="subLine"></div>
   <div class="bar"><i id="topBar" style="width:0%"></i></div>
 </header>
 
 <main>
-  <!-- 打卡 -->
+  <!-- ===== 嵌入式模式 ===== -->
   <section id="v-weeks" class="view active">
     <div class="notice" id="startNotice"></div>
     <div id="weekList"></div>
   </section>
 
-  <!-- 题库 -->
   <section id="v-quiz" class="view">
-    <div class="notice">先自己答，再点"看答案"。答完按实际得分记录，&lt;80 分要把错题写进《检验题库.md》的错题本。</div>
+    <div class="notice">先自己答，再点「看答案」。答完按实际得分记录；&lt;80 分要把错题写进《检验题库.md》的错题本。</div>
     <div id="quizGroups"></div>
   </section>
 
-  <!-- 统计 -->
   <section id="v-stat" class="view">
-    <div class="grid" id="statGrid"></div>
+    <div class="grid2" id="statGrid"></div>
     <h3>各阶段进度</h3>
     <div id="phaseStats"></div>
     <h3>时间线（从现在到投递）</h3>
     <ul class="tl" id="timeline"></ul>
-    <h3>数据管理</h3>
-    <div class="btns">
-      <div class="btn" onclick="exportData()">导出备份</div>
-      <div class="btn" onclick="document.getElementById('imp').click()">导入备份</div>
-      <div class="btn bad" onclick="resetAll()">清空数据</div>
-    </div>
-    <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">
   </section>
 
-  <!-- 设置 -->
   <section id="v-set" class="view">
-    <div class="notice">把每周投入目标设成你真能做到的数字。10–15 h/周按 12.5 h 排。</div>
+    <div class="notice g">把每周投入目标设成你真能做到的数字（10–15 h/周按 12.5 h 排）。</div>
     <h3>计划开始日期（第 1 周周一）</h3>
     <input type="date" id="startDate" onchange="saveStart()">
     <h3>每周投入目标（小时）</h3>
@@ -171,42 +172,73 @@ h3{font-size:14px;margin:16px 0 8px;color:var(--dim);letter-spacing:.4px}
     <h3>投递目标</h3>
     <input type="text" id="goalInput" onchange="saveGoal()">
     <h3>使用说明</h3>
-    <div class="notice" style="background:#141c2e;border-color:var(--line);color:var(--dim)">
+    <div class="notice g">
       1. 每周打开 App，勾掉做完的任务与检验项；<br>
       2. 状态选 ✅ 通过 / ⚠️ 及格（记欠账）/ ❌ 不通过（用机动周补）；<br>
       3. 填本周实际投入小时数，写三行复盘；<br>
-      4. 每 4 周结束时去「题库」做整章测评并记录分数；<br>
-      5. 数据只存在这台手机里（localStorage），换机前用「导出备份」。<br><br>
-      <b>欠账不过周</b>：任何一周 ❌ 就用机动周补，绝不允许先往后学。
+      4. 每 4 周结束去「周测」做整章测评并记录分数；<br>
+      5. 数据只存在这台设备里，换设备前用下面「导出备份」。
     </div>
-    <h3>打不开 / 提示"会话已过期"怎么办</h3>
-    <div class="notice" style="background:#2a1a10;border-color:#78601a;color:#fed7aa">
-      <b>原因</b>：这份文件是 html，用"云盘预览 / 聊天里直接点开"的方式打开时，iOS 走的是<b>带临时链接的预览会话</b>，链接几分钟就失效，所以一会就报"会话已过期"。<b>文件本身没坏，也没有联网依赖。</b><br><br>
-      <b>根治方法（把文件真正存到手机本地）</b>：<br>
-      ① 用「文件」App 打开 -> 长按这个 html -> 选择<b>「拷贝」</b>；<br>
-      ② 进入 <b>「我的 iPhone」</b>（不是 iCloud 云盘）-> 新建文件夹如 <code>嵌入式</code> -> <b>「粘贴」</b>；<br>
-      ③ 从「我的 iPhone」里点开它 -> 会交给 Safari 渲染（不再经过云盘预览）；<br>
-      ④ Safari 底部分享 -> <b>添加到主屏幕</b>，以后从图标进，全屏、离线可用。<br><br>
-      <b>电脑上</b>：直接双击本地文件用 Chrome/Edge 打开即可，别把云盘同步目录里的文件一直放在"预览"状态。<br>
-      <b>文件名</b>：若某些 App 打不开中文名文件，先改成 <code>index.html</code> 或 <code>embed.html</code> 再试。
+    <h3>打不开 / 提示「会话已过期」？</h3>
+    <div class="notice a">
+      <b>原因</b>：这是 iOS 打开云盘/聊天里文件的<b>临时预览会话</b>到期所致，<b>文件本身没坏、也不需要联网</b>。<br>
+      <b>解决</b>：「文件」App 长按本文件 → <b>拷贝</b> → 进 <b>「我的 iPhone」</b>（不是 iCloud 云盘）→ 粘贴 → 从那里点开 → Safari 分享 → <b>添加到主屏幕</b>。<br>
+      <b>更省事</b>：传到 GitHub Pages 得到网址，Safari 打开后添加到主屏幕，永不过期。
     </div>
-    <h3>想更省事的方案</h3>
-    <div class="notice" style="background:#0d2233;border-color:#2a5f86;color:#bae6fd">
-      把 <code>嵌入式打卡.html</code> 传到 <b>GitHub Pages</b>（免费）得到一个网址，iPhone 用 Safari 打开该网址再"添加到主屏幕"。这样它是一个真正的在线地址，不会出现本地预览过期的问题，也能同步给同学一起用。
+    <h3>数据管理</h3>
+    <div class="btns">
+      <div class="btn" onclick="exportAll()">导出全部备份</div>
+      <div class="btn" onclick="document.getElementById('imp').click()">导入备份</div>
+      <div class="btn bad" onclick="resetAll()">清空全部</div>
+    </div>
+    <input type="file" id="imp" accept=".json" style="display:none" onchange="importAll(this)">
+  </section>
+
+  <!-- ===== C 刷题模式 ===== -->
+  <section id="v-clist" class="view">
+    <div class="notice a">
+      <b>用法</b>：先自己想 5 分钟 → 看「提示」→ 在电脑上写并<b>编译运行</b>（别只看代码）→ 通过样例后勾「已通过」。<br>
+      题目为按 PTA 题型风格<b>原创</b>的等难度题（PTA 原题有版权，需去官网练）。<br>
+      编译：<code>gcc -std=c99 -Wall -Wextra -O2 a.c -o a -lm</code>
+    </div>
+    <div class="filters" id="cfilters"></div>
+    <div id="clist"></div>
+  </section>
+
+  <section id="v-cstat" class="view">
+    <div class="grid2" id="cstatGrid"></div>
+    <h3>各层进度</h3>
+    <div id="tierStats"></div>
+    <h3>刷题顺序建议</h3>
+    <div class="notice g">
+      第 1 周：T1 全部（10 题，练熟输入输出与循环）<br>
+      第 2 周：T2 + T3 前半（数组、字符串、指针基础）<br>
+      第 3 周：T3 后半 + T4（指针进阶、结构体、位运算）<br>
+      第 4 周：T5 挑 5 题<br>
+      之后每天 1 题保持手感，直到面试
+    </div>
+    <h3>C 模式数据</h3>
+    <div class="btns">
+      <div class="btn" onclick="exportC()">导出刷题进度</div>
+      <div class="btn" onclick="resetC()">清空刷题进度</div>
     </div>
   </section>
 </main>
 
-<nav>
+<nav id="navEmbed">
   <button class="on" data-v="weeks"><span class="ic">📅</span>打卡</button>
-  <button data-v="quiz"><span class="ic">📝</span>题库</button>
+  <button data-v="quiz"><span class="ic">📝</span>周测</button>
   <button data-v="stat"><span class="ic">📊</span>统计</button>
   <button data-v="set"><span class="ic">⚙️</span>设置</button>
+</nav>
+<nav id="navC" style="display:none">
+  <button class="on" data-v="clist"><span class="ic">📚</span>题目</button>
+  <button data-v="cstat"><span class="ic">📊</span>进度</button>
 </nav>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ============ 数据 ============ */
+/* ==================== 一、40 周计划数据 ==================== */
 const WEEKS = [
  {w:"1", block:"块1 · C 与 Linux 地基", phase:"阶段零", title:"指针与内存模型",
   topics:["指针与数组","二级指针","函数指针","void*","栈/堆/全局/常量区","malloc/free","野指针与悬空指针","sizeof vs strlen"],
@@ -369,7 +401,16 @@ const WEEKS = [
   deliv:"完成投递并建立投递记录表",
   tests:["投递 ≥15 家并记录岗位/时间/状态","准备好面试复盘模板，每次面试后 24 h 内复盘"]}
 ];
+const PHASES = [
+ ["阶段零 · C 与 Linux 地基", [1,4]],
+ ["阶段一 · 嵌入式基础（MCU/RTOS/CAN）", [5,18]],
+ ["阶段二 · 嵌入式 Linux 与驱动", [19,28]],
+ ["面试准备 · 八股与模拟面试", [29,32]],
+ ["阶段三 · FOC 电机控制（加分项）", [33,36]],
+ ["求职冲刺 · 手撕与投递", [37,40]]
+];
 
+/* ==================== 二、周测题库 ==================== */
 const QUIZ = [
  {g:"块1 · C 与 Linux（2.1）", pass:80, qs:[
   ["以下输出什么？为什么？\nchar *p=\"hello\"; char a[]=\"hello\";\nprintf(\"%zu %zu\", sizeof(p), sizeof(a));","`8 6`。64 位下指针 8 字节；`a` 是数组含结尾 `\\0` 共 6 字节。"],
@@ -470,97 +511,944 @@ const QUIZ = [
  ]}
 ];
 
-const PHASES = [
- ["阶段零 · C 与 Linux 地基", [1,4]],
- ["阶段一 · 嵌入式基础（MCU/RTOS/CAN）", [5,18]],
- ["阶段二 · 嵌入式 Linux 与驱动", [19,28]],
- ["面试准备 · 八股与模拟面试", [29,32]],
- ["阶段三 · FOC 电机控制（加分项）", [33,36]],
- ["求职冲刺 · 手撕与投递", [37,40]]
-];
+/* ==================== 三、C 刷题题库 ==================== */
+const P = [
+/* ---------- T1 基础：输入输出 / 分支 / 循环 / 数学 ---------- */
+{t:1,d:"<10 min",title:"两数之和与差",q:"在一行中输入两个整数 a 和 b，输出它们的和与差。",
+ input:"一行，两个整数 a、b（-10000 ≤ a,b ≤ 10000）",output:"一行，和与差，用一个空格分隔",
+ sample:"输入：3 5\\n输出：8 -2",
+ hint:"用 scanf(\"%d %d\",&a,&b) 读入，注意 & 不能漏。",
+ code:`#include <stdio.h>
+int main(void){
+    int a, b;
+    scanf("%d %d", &a, &b);
+    printf("%d %d\\n", a + b, a - b);
+    return 0;
+}`},
+{t:1,d:"<10 min",title:"分段函数求值",q:"给定 x，按如下规则求 y：x>0 时 y=2x+1；x=0 时 y=0；x<0 时 y=x*x-1。",
+ input:"一行，一个整数 x（-1000 ≤ x ≤ 1000）",output:"一行，y 的值",
+ sample:"输入：-3\\n输出：8",
+ hint:"三支 if/else if/else，注意 0 单独一支。",
+ code:`#include <stdio.h>
+int main(void){
+    long long x, y;
+    scanf("%lld", &x);
+    if (x > 0)      y = 2 * x + 1;
+    else if (x == 0) y = 0;
+    else            y = x * x - 1;
+    printf("%lld\\n", y);
+    return 0;
+}`},
+{t:1,d:"<10 min",title:"1 到 n 的偶数和",q:"读入正整数 n，计算 1 到 n 之间所有偶数的和。",
+ input:"一行，正整数 n（1 ≤ n ≤ 10^6）",output:"一行，偶数和",
+ sample:"输入：10\\n输出：30",
+ hint:"可以循环判断奇偶，也可以用等差数列公式 n/2*(n/2+1)。",
+ code:`#include <stdio.h>
+int main(void){
+    long long n;
+    scanf("%lld", &n);
+    long long m = n / 2;              /* 偶数个数 */
+    printf("%lld\\n", m * (m + 1));   /* 2+4+...+2m */
+    return 0;
+}`},
+{t:1,d:"<10 min",title:"成绩等级判定",q:"输入一个 0~100 的整数成绩，按下列规则输出等级：90~100 为 A，80~89 为 B，70~79 为 C，60~69 为 D，0~59 为 E。若输入不在 0~100 范围，输出 Invalid。",
+ input:"一行，一个整数 score",output:"一行，一个大写字母等级或 Invalid",
+ sample:"输入：85\n输出：B",
+ hint:"用 score/10 做 switch 更简洁，但要注意 100 和非法值。",
+ code:`#include <stdio.h>
+int main(void){
+    int s;
+    scanf("%d", &s);
+    if (s < 0 || s > 100) { puts("Invalid"); return 0; }
+    if (s >= 90) puts("A");
+    else if (s >= 80) puts("B");
+    else if (s >= 70) puts("C");
+    else if (s >= 60) puts("D");
+    else puts("E");
+    return 0;
+}`},
+{t:1,d:"<10 min",title:"九九乘法表（三角形）",q:"输出 9 行，第 i 行输出 1×i 到 i×i 的乘法式，格式为 a*b=c，相邻式子之间用一个空格分隔。",
+ input:"无输入",output:"9 行乘法表，每行以换行结束",
+ sample:"输出第 3 行：1*3=3 2*3=6 3*3=9",
+ hint:"两层循环，外层 i 从 1 到 9，内层 j 从 1 到 i，注意行末不输出多余空格。",
+ code:`#include <stdio.h>
+int main(void){
+    for (int i = 1; i <= 9; i++) {
+        for (int j = 1; j <= i; j++) {
+            if (j > 1) putchar(' ');
+            printf("%d*%d=%d", j, i, i * j);
+        }
+        putchar('\\n');
+    }
+    return 0;
+}`},
+{t:1,d:"<15 min",title:"圆台体积（浮点与数学库）",q:"输入上底半径 r1、下底半径 r2 和高 h，计算圆台体积 V = πh(r1² + r1r2 + r2²)/3，保留 3 位小数。",
+ input:"一行，三个实数 r1、r2、h（0 < r ≤ 100，0 < h ≤ 100）",output:"一行，体积，保留 3 位小数",
+ sample:"输入：1 2 3\n输出：21.991",
+ hint:"需要 #include <math.h> 并用 M_PI 或 acos(-1.0)，编译时要加 -lm。",
+ code:`#include <stdio.h>
+#include <math.h>
+int main(void){
+    double r1, r2, h;
+    scanf("%lf %lf %lf", &r1, &r2, &h);
+    double pi = acos(-1.0);
+    double v = pi * h * (r1*r1 + r1*r2 + r2*r2) / 3.0;
+    printf("%.3f\\n", v);
+    return 0;
+}`},
+{t:1,d:"<15 min",title:"数字反转",q:"输入一个非负整数，输出它反转后的数。要求去掉前导零，例如 1200 反转后输出 21。若输入为 0 则输出 0。",
+ input:"一行，非负整数 n（0 ≤ n ≤ 10^9）",output:"一行，反转后的整数",
+ sample:"输入：1200\n输出：21",
+ hint:"循环 n%10 取末位、n/=10，逐位构造结果；用 long long 防溢出。",
+ code:`#include <stdio.h>
+int main(void){
+    long long n, r = 0;
+    scanf("%lld", &n);
+    while (n > 0) { r = r * 10 + n % 10; n /= 10; }
+    printf("%lld\\n", r);
+    return 0;
+}`},
+{t:1,d:"<15 min",title:"水仙花数",q:"输出 100 到 999 之间所有各位数字的立方和等于该数本身的三位数，每行一个。",
+ input:"无输入",output:"所有满足条件的三位数，每行一个",
+ sample:"输出首行：153",
+ hint:"分离百位 n/100、十位 n/10%10、个位 n%10。",
+ code:`#include <stdio.h>
+int main(void){
+    for (int n = 100; n <= 999; n++) {
+        int a = n / 100, b = n / 10 % 10, c = n % 10;
+        if (a*a*a + b*b*b + c*c*c == n) printf("%d\\n", n);
+    }
+    return 0;
+}`},
+{t:1,d:"<20 min",title:"最大公约数与最小公倍数",q:"输入两个正整数，输出它们的最大公约数与最小公倍数（用空格分隔）。",
+ input:"一行，两个正整数 a、b（1 ≤ a,b ≤ 10^9）",output:"一行，gcd 与 lcm，空格分隔",
+ sample:"输入：12 18\n输出：6 36",
+ hint:"辗转相除法求 gcd，lcm = a/gcd*b（先除后乘防溢出）。",
+ code:`#include <stdio.h>
+int main(void){
+    long long a, b, x, y, t;
+    scanf("%lld %lld", &a, &b);
+    x = a; y = b;
+    while (y) { t = x % y; x = y; y = t; }   /* x 为 gcd */
+    printf("%lld %lld\\n", x, a / x * b);
+    return 0;
+}`},
+{t:1,d:"<20 min",title:"质因数分解",q:"输入一个大于 1 的整数，输出它的质因数分解式，格式如 12=2*2*3。",
+ input:"一行，整数 n（2 ≤ n ≤ 10^9）",output:"一行，分解式",
+ sample:"输入：12\n输出：12=2*2*3",
+ hint:"从 i=2 试除到 i*i<=n，除尽后剩下的 n 若大于 1 本身也是质因数。",
+ code:`#include <stdio.h>
+int main(void){
+    long long n;
+    scanf("%lld", &n);
+    printf("%lld=", n);
+    int first = 1;
+    for (long long i = 2; i * i <= n; i++) {
+        while (n % i == 0) {
+            if (!first) putchar('*');
+            printf("%lld", i);
+            first = 0;
+            n /= i;
+        }
+    }
+    if (n > 1) { if (!first) putchar('*'); printf("%lld", n); }
+    putchar('\\n');
+    return 0;
+}`},
 
-/* ============ 存储 ============ */
-let store = {weeks:{}, quiz:{}, settings:{start:"", target:12.5, goal:"研二寒假投递大厂实习"}};
-const LS = "embed_checkin_v1";
+/* ---------- T2 数组与字符串 ---------- */
+{t:2,d:"<15 min",title:"数组最大值与下标",q:"输入 n 个整数，输出最大值以及它第一次出现的下标（下标从 0 开始）。",
+ input:"第一行 n（1 ≤ n ≤ 1000）；第二行 n 个整数",output:"一行，最大值与下标，空格分隔",
+ sample:"输入：5\\n3 7 7 2 1\\n输出：7 1",
+ hint:"边读边比较，用 > 而不是 >= 才能保留第一次出现的下标。",
+ code:`#include <stdio.h>
+int main(void){
+    int n, x, mx, idx = 0;
+    scanf("%d", &n);
+    scanf("%d", &mx);
+    for (int i = 1; i < n; i++) {
+        scanf("%d", &x);
+        if (x > mx) { mx = x; idx = i; }
+    }
+    printf("%d %d\\n", mx, idx);
+    return 0;
+}`},
+{t:2,d:"<15 min",title:"数组逆序输出",q:"输入 n 个整数，将它们逆序输出，相邻数字用一个空格分隔。",
+ input:"第一行 n；第二行 n 个整数",output:"一行，逆序结果",
+ sample:"输入：3\\n1 2 3\\n输出：3 2 1",
+ hint:"可以真的交换数组元素，也可以从后往前输出；注意行末空格。",
+ code:`#include <stdio.h>
+int main(void){
+    int n, a[1005];
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    for (int i = n - 1; i >= 0; i--) printf("%d%c", a[i], i ? ' ' : '\\n');
+    return 0;
+}`},
+{t:2,d:"<20 min",title:"素数个数（埃氏筛）",q:"统计 1 到 N 之间素数的个数。",
+ input:"一行，正整数 N（1 ≤ N ≤ 10^6）",output:"一行，素数个数",
+ sample:"输入：10\\n输出：4",
+ hint:"筛法：标记 0/1 不是素数，从 2 开始把倍数全部划掉，复杂度 O(N log log N)。",
+ code:`#include <stdio.h>
+#include <string.h>
+static char comp[1000005];
+int main(void){
+    int n, cnt = 0;
+    scanf("%d", &n);
+    if (n < 2) { puts("0"); return 0; }
+    for (int i = 2; (long long)i * i <= n; i++)
+        if (!comp[i])
+            for (int j = i * i; j <= n; j += i) comp[j] = 1;
+    for (int i = 2; i <= n; i++) if (!comp[i]) cnt++;
+    printf("%d\\n", cnt);
+    return 0;
+}`},
+{t:2,d:"<20 min",title:"二分查找（首次出现位置）",q:"在升序数组中找到目标值第一次出现的下标，找不到输出 -1。",
+ input:"第一行 n 与 target；第二行 n 个升序整数（允许重复）",output:"一行，下标或 -1",
+ sample:"输入：6 3\\n1 2 3 3 5 6\\n输出：2",
+ hint:"标准二分 + 命中后继续向左收缩（记录答案后 hi=mid-1）。",
+ code:`#include <stdio.h>
+int main(void){
+    int n, t, a[100005];
+    scanf("%d %d", &n, &t);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    int lo = 0, hi = n - 1, ans = -1;
+    while (lo <= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] >= t) { if (a[mid] == t) ans = mid; hi = mid - 1; }
+        else lo = mid + 1;
+    }
+    printf("%d\\n", ans);
+    return 0;
+}`},
+{t:2,d:"<20 min",title:"冒泡排序统计交换次数",q:"把 n 个整数按从小到大排序，输出排序后的序列以及过程中发生的元素交换次数。",
+ input:"第一行 n（1 ≤ n ≤ 1000）；第二行 n 个整数",output:"第一行排序结果；第二行交换次数",
+ sample:"输入：4\\n4 3 2 1\\n输出：\\n1 2 3 4\\n6",
+ hint:"每发生一次真实交换就计数；一旦某轮无交换可提前结束。",
+ code:`#include <stdio.h>
+int main(void){
+    int n, a[1005], cnt = 0;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    for (int i = 0; i < n - 1; i++) {
+        int sw = 0;
+        for (int j = 0; j < n - 1 - i; j++)
+            if (a[j] > a[j+1]) { int t = a[j]; a[j] = a[j+1]; a[j+1] = t; cnt++; sw = 1; }
+        if (!sw) break;
+    }
+    for (int i = 0; i < n; i++) printf("%d%c", a[i], i == n-1 ? '\\n' : ' ');
+    printf("%d\\n", cnt);
+    return 0;
+}`},
+{t:2,d:"<20 min",title:"统计单词个数",q:"输入一行可能含多个空格的英文句子，统计其中单词的个数（单词由连续非空格字符组成）。",
+ input:"一行字符串，长度不超过 1000",output:"一行，单词个数",
+ sample:"输入：hello   world  c\\n输出：3",
+ hint:"用 fgets 读整行，遍历时检测「前一个是空格/开头 且 当前不是空格」。",
+ code:`#include <stdio.h>
+int main(void){
+    char s[1005];
+    if (!fgets(s, sizeof s, stdin)) return 0;
+    int cnt = 0, in = 0;
+    for (int i = 0; s[i]; i++) {
+        if (s[i] == ' ' || s[i] == '\\n' || s[i] == '\\t') in = 0;
+        else if (!in) { in = 1; cnt++; }
+    }
+    printf("%d\\n", cnt);
+    return 0;
+}`},
+{t:2,d:"<25 min",title:"回文串判定（忽略大小写与空格）",q:"判断一行字符串忽略大小写和空格后是否为回文。是输出 YES，否则输出 NO。",
+ input:"一行字符串，长度不超过 1000",output:"YES 或 NO",
+ sample:"输入：A man a plan\\n输出：NO",
+ hint:"先把有效字符过滤进新数组并统一转小写，再双指针对撞比较。",
+ code:`#include <stdio.h>
+#include <ctype.h>
+int main(void){
+    char s[1005], t[1005];
+    if (!fgets(s, sizeof s, stdin)) return 0;
+    int m = 0;
+    for (int i = 0; s[i]; i++)
+        if (!isspace((unsigned char)s[i])) t[m++] = (char)tolower((unsigned char)s[i]);
+    for (int i = 0, j = m - 1; i < j; i++, j--)
+        if (t[i] != t[j]) { puts("NO"); return 0; }
+    puts("YES");
+    return 0;
+}`},
+{t:2,d:"<25 min",title:"字符串循环左移",q:"把字符串循环左移 k 位后输出。例如 abcde 左移 2 位得到 cdeab。",
+ input:"第一行 k（0 ≤ k ≤ 10^9）；第二行不含空格的字符串（长度 ≤ 1000）",output:"一行，左移后的字符串",
+ sample:"输入：2\\nabcde\\n输出：cdeab",
+ hint:"k 先对长度取模；三段逆序法可在 O(n) 时间 O(1) 空间完成（面试常问）。",
+ code:`#include <stdio.h>
+#include <string.h>
+static void rev(char *s, int l, int r){ while (l < r) { char t = s[l]; s[l++] = s[r]; s[r--] = t; } }
+int main(void){
+    long long k; char s[1005];
+    scanf("%lld", &k);
+    scanf("%s", s);
+    int n = (int)strlen(s);
+    if (n) {
+        k %= n;
+        rev(s, 0, (int)k - 1);
+        rev(s, (int)k, n - 1);
+        rev(s, 0, n - 1);
+    }
+    puts(s);
+    return 0;
+}`},
+{t:2,d:"<25 min",title:"矩阵转置",q:"输入 m 行 n 列的整数矩阵，输出它的转置（n 行 m 列）。",
+ input:"第一行 m、n（1 ≤ m,n ≤ 100）；随后 m 行每行 n 个整数",output:"n 行，每行 m 个整数",
+ sample:"输入：2 3\\n1 2 3\\n4 5 6\\n输出：\\n1 4\\n2 5\\n3 6",
+ hint:"用二维数组存下再按列输出；注意行末空格。",
+ code:`#include <stdio.h>
+int main(void){
+    int m, n, a[105][105];
+    scanf("%d %d", &m, &n);
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n; j++) scanf("%d", &a[i][j]);
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < m; i++) printf("%d%c", a[i][j], i == m-1 ? '\\n' : ' ');
+    }
+    return 0;
+}`},
+{t:2,d:"<30 min",title:"简单选择排序 + 冒泡对比",q:"用选择排序把 n 个整数升序排序并输出；再输出选择排序过程中【交换次数】与冒泡排序（无优化）的【交换次数】之差。",
+ input:"第一行 n（1 ≤ n ≤ 1000）；第二行 n 个整数",output:"第一行排序结果；第二行两个交换次数之差（选择 - 冒泡）",
+ sample:"输入：4\\n4 3 2 1\\n输出：\\n1 2 3 4\\n-3",
+ hint:"选择排序最多交换 n-1 次（每轮只交换一次），冒泡的交换次数等于逆序对数。",
+ code:`#include <stdio.h>
+int main(void){
+    int n, a[1005], b[1005];
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) { scanf("%d", &a[i]); b[i] = a[i]; }
+    int sc = 0, bc = 0;
+    for (int i = 0; i < n - 1; i++) {           /* 选择排序 */
+        int mi = i;
+        for (int j = i + 1; j < n; j++) if (a[j] < a[mi]) mi = j;
+        if (mi != i) { int t = a[i]; a[i] = a[mi]; a[mi] = t; sc++; }
+    }
+    for (int i = 0; i < n - 1; i++)             /* 冒泡排序 */
+        for (int j = 0; j < n - 1 - i; j++)
+            if (b[j] > b[j+1]) { int t = b[j]; b[j] = b[j+1]; b[j+1] = t; bc++; }
+    for (int i = 0; i < n; i++) printf("%d%c", a[i], i == n-1 ? '\\n' : ' ');
+    printf("%d\\n", sc - bc);
+    return 0;
+}`},
+
+/* ---------- T3 指针与内存 ---------- */
+{t:3,d:"<20 min",title:"用指针交换两个数",q:"读入两个整数，通过函数用指针交换它们的值后输出。",
+ input:"一行，两个整数",output:"一行，交换后的两个整数",
+ sample:"输入：3 5\\n输出：5 3",
+ hint:"函数参数写成 int *，内部用 *a、*b 解引用；这是理解「传值 vs 传址」的入门题。",
+ code:`#include <stdio.h>
+static void swap(int *a, int *b){ int t = *a; *a = *b; *b = t; }
+int main(void){
+    int x, y;
+    scanf("%d %d", &x, &y);
+    swap(&x, &y);          /* 传地址，才能改到实参 */
+    printf("%d %d\\n", x, y);
+    return 0;
+}`},
+{t:3,d:"<20 min",title:"用指针实现字符串长度",q:"不使用 strlen，用指针遍历实现求字符串长度并输出。字符串不含空格。",
+ input:"一行，不含空格的字符串（长度 ≤ 1000）",output:"一行，长度",
+ sample:"输入：embedded\\n输出：8",
+ hint:"指针从首地址后移直到 *p == '\\0'，两指针相减即为长度。",
+ code:`#include <stdio.h>
+int main(void){
+    char s[1005];
+    scanf("%s", s);
+    const char *p = s;
+    while (*p) p++;                 /* 移到 '\\0' 处 */
+    printf("%d\\n", (int)(p - s));
+    return 0;
+}`},
+{t:3,d:"<25 min",title:"通过指针返回多个结果",q:"写一个函数，输入 n 个整数，同时返回最大值、最小值与总和。主函数调用后输出这三个值。",
+ input:"第一行 n；第二行 n 个整数",output:"一行，最大值 最小值 总和",
+ sample:"输入：4\\n5 2 9 1\\n输出：9 1 17",
+ hint:"C 只能 return 一个值，其余用指针参数带出；注意对空数组的防御。",
+ code:`#include <stdio.h>
+static void stat(const int *a, int n, int *mx, int *mn, long long *sum){
+    *mx = *mn = a[0]; *sum = 0;
+    for (int i = 0; i < n; i++) {
+        if (a[i] > *mx) *mx = a[i];
+        if (a[i] < *mn) *mn = a[i];
+        *sum += a[i];
+    }
+}
+int main(void){
+    int n, a[1005], mx, mn; long long sum;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    stat(a, n, &mx, &mn, &sum);
+    printf("%d %d %lld\\n", mx, mn, sum);
+    return 0;
+}`},
+{t:3,d:"<25 min",title:"const 指针辨析（概念题）",q:"说明下列四个声明的含义，并指出哪些可以修改指针指向、哪些可以修改所指内容：\\n(1) const int *p;\\n(2) int const *p;\\n(3) int * const p;\\n(4) const int * const p;",
+ input:"无",output:"文字说明",
+ sample:"示例答案：\\n(1)(2) 相同：所指内容不可改，指针本身可改\\n(3) 指针本身不可改，所指内容可改\\n(4) 两者都不可改",
+ hint:"从右往左读：先看 const 紧挨谁。面试高频，务必能脱口而出。",
+ code:`/* 记忆法：const 在 * 左边 -> 锁内容；const 在 * 右边 -> 锁指针
+   const int *p;        // *p 只读, p 可改
+   int const *p;        // 同上（等价写法）
+   int * const p;       // p 只读, *p 可改
+   const int * const p; // 都只读
+   用途：函数参数 const int *a 表示「只读数组」,是接口契约。*/`},
+{t:3,d:"<30 min",title:"指针数组与字符串排序",q:"输入 n 个不含空格的单词，按字典序升序输出。要求使用指针数组，排序时只交换指针而不移动字符串内容。",
+ input:"第一行 n（1 ≤ n ≤ 100）；随后 n 行，每行一个单词（长度 ≤ 50）",output:"n 行，排序后的单词",
+ sample:"输入：3\\nbanana\\napple\\ncherry\\n输出：\\napple\\nbanana\\ncherry",
+ hint:"char *p[n] 指向各单词，比较用 strcmp，交换只换指针（这就是指针数组的价值：拷贝成本低）。",
+ code:`#include <stdio.h>
+#include <string.h>
+int main(void){
+    int n; char buf[105][55]; char *p[105];
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) { scanf("%s", buf[i]); p[i] = buf[i]; }
+    for (int i = 0; i < n - 1; i++)
+        for (int j = 0; j < n - 1 - i; j++)
+            if (strcmp(p[j], p[j+1]) > 0) { char *t = p[j]; p[j] = p[j+1]; p[j+1] = t; }
+    for (int i = 0; i < n; i++) puts(p[i]);
+    return 0;
+}`},
+{t:3,d:"<30 min",title:"动态数组求和（malloc/free）",q:"输入 n 个整数，用 malloc 申请内存存放后求和输出。要求在程序结束前释放内存。",
+ input:"第一行 n（1 ≤ n ≤ 10^6）；第二行 n 个整数",output:"一行，总和",
+ sample:"输入：3\\n1 2 3\\n输出：6",
+ hint:"malloc 返回值必须检查是否为 NULL；free 只能释放 malloc/calloc/realloc 得到的指针，且不能重复释放。",
+ code:`#include <stdio.h>
+#include <stdlib.h>
+int main(void){
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+    int *a = (int *)malloc((size_t)n * sizeof(int));
+    if (!a) { fprintf(stderr, "out of memory\\n"); return 1; }
+    long long sum = 0;
+    for (int i = 0; i < n; i++) { scanf("%d", &a[i]); sum += a[i]; }
+    printf("%lld\\n", sum);
+    free(a);
+    a = NULL;               /* 防悬空指针：置空是好习惯 */
+    return 0;
+}`},
+{t:3,d:"<35 min",title:"环形缓冲区（嵌入式高频）",q:"实现一个容量为 N 的环形缓冲区，支持入队、出队、判空、判满。按命令处理：E x 入队，D 出队并输出，其余忽略。缓冲区满时入队失败输出 FULL，空时出队输出 EMPTY。",
+ input:"第一行 N（1 ≤ N ≤ 1000）；随后若干行命令，以 Q 结束",output:"按命令输出结果",
+ sample:"输入：\\n2\\nE 1\\nE 2\\nE 3\\nD\\nD\\nD\\nQ\\n输出：\\nFULL\\n1\\n2\\nEMPTY",
+ hint:"关键设计：留一格空位区分满与空（head==tail 为空，(tail+1)%N==head 为满）；读写指针各自只被一方修改，是单生产单消费无锁队列的基础。",
+ code:`#include <stdio.h>
+#include <string.h>
+#define CAP 1005
+static int buf[CAP], head, tail, cap;
+static int empty(void){ return head == tail; }
+static int full(void){ return (tail + 1) % cap == head; }
+int main(void){
+    scanf("%d", &cap);
+    cap++;                           /* 多留一格用于区分满/空 */
+    if (cap > CAP) cap = CAP;
+    char cmd[16];
+    while (scanf("%s", cmd) == 1) {
+        if (cmd[0] == 'Q') break;
+        if (cmd[0] == 'E') {
+            int x; scanf("%d", &x);
+            if (full()) puts("FULL");
+            else { buf[tail] = x; tail = (tail + 1) % cap; }
+        } else if (cmd[0] == 'D') {
+            if (empty()) puts("EMPTY");
+            else { printf("%d\\n", buf[head]); head = (head + 1) % cap; }
+        }
+    }
+    return 0;
+}`},
+{t:3,d:"<35 min",title:"函数指针实现计算器",q:"用函数指针表实现四则运算：输入形如 3 + 5 的表达式（运算符为 + - * / 之一，整数运算），输出结果。除数为 0 时输出 ERROR。",
+ input:"一行，格式为 a op b",output:"一行，结果或 ERROR",
+ sample:"输入：6 / 2\\n输出：3",
+ hint:"定义 int (*fp[256])(int,int) 以运算符字符为下标；这是「命令注册表」的简化版，也是驱动 file_operations 的思想来源。",
+ code:`#include <stdio.h>
+static int add(int a, int b){ return a + b; }
+static int sub(int a, int b){ return a - b; }
+static int mul(int a, int b){ return a * b; }
+static int divide(int a, int b){ return a / b; }
+int main(void){
+    int a, b; char op;
+    int (*tab[256])(int, int) = {0};
+    tab['+'] = add; tab['-'] = sub; tab['*'] = mul; tab['/'] = divide;
+    if (scanf("%d %c %d", &a, &op, &b) != 3) return 0;
+    if (!tab[(unsigned char)op] || (op == '/' && b == 0)) { puts("ERROR"); return 0; }
+    printf("%d\\n", tab[(unsigned char)op](a, b));
+    return 0;
+}`},
+
+/* ---------- T4 结构体与位运算 ---------- */
+{t:4,d:"<25 min",title:"结构体排序",q:"给定 n 个学生的姓名、数学成绩、英语成绩，按总分降序输出；总分相同时按姓名字典序升序。",
+ input:"第一行 n（1 ≤ n ≤ 1000）；随后 n 行：姓名 数学 英语",output:"n 行：姓名 总分",
+ sample:"输入：2\\nTom 90 80\\nAnn 85 90\\n输出：\\nAnn 175\\nTom 170",
+ hint:"结构体数组 + qsort/冒泡；比较函数先比总分降序再比姓名升序。",
+ code:`#include <stdio.h>
+#include <string.h>
+typedef struct { char name[32]; int m, e, sum; } Stu;
+int main(void){
+    int n; Stu s[1005], t;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%s %d %d", s[i].name, &s[i].m, &s[i].e);
+        s[i].sum = s[i].m + s[i].e;
+    }
+    for (int i = 0; i < n - 1; i++)
+        for (int j = 0; j < n - 1 - i; j++) {
+            int sw = s[j].sum < s[j+1].sum ||
+                     (s[j].sum == s[j+1].sum && strcmp(s[j].name, s[j+1].name) > 0);
+            if (sw) { t = s[j]; s[j] = s[j+1]; s[j+1] = t; }
+        }
+    for (int i = 0; i < n; i++) printf("%s %d\\n", s[i].name, s[i].sum);
+    return 0;
+}`},
+{t:4,d:"<25 min",title:"结构体的大小（内存对齐）",q:"定义结构体 struct A { char a; int b; short c; }; 与 struct B { int b; short c; char a; }; 输出两者的 sizeof，并说明为什么不同。",
+ input:"无",output:"两个 sizeof 值及原因",
+ sample:"输出（32/64 位常见结果）：\\n12 8\\n原因：A 中 int 需 4 字节对齐，c 后还需补齐到 4 的倍数；B 把大成员前置，padding 更少",
+ hint:"规则：每个成员相对首地址的偏移必须是其对齐数的整数倍，结构体总大小是其最大对齐数的整数倍。此题为嵌入式与面试高频考点。",
+ code:`#include <stdio.h>
+struct A { char a; int b; short c; };   /* 1 + pad3 + 4 + 2 + pad2 = 12 */
+struct B { int b; short c; char a; };   /* 4 + 2 + 1 + pad1 = 8  */
+struct C { char a; int b; short c; } __attribute__((packed));  /* = 7，GCC 扩展 */
+int main(void){
+    printf("%zu %zu %zu\\n", sizeof(struct A), sizeof(struct B), sizeof(struct C));
+    return 0;
+}`},
+{t:4,d:"<30 min",title:"位域解析报文（嵌入式高频）",q:"给定一个 16 位的无符号整数，按下列位域解析并输出各字段：bit15~12 为 type（4 位）、bit11~8 为 flag（4 位）、bit7~0 为 value（8 位）。",
+ input:"一行，0 ~ 65535 的整数",output:"一行：type flag value",
+ sample:"输入：53249\\n输出：13 0 1",
+ hint:"两种写法：位域结构体或移位掩码 (x>>12)&0xF。生产代码更推荐移位掩码，因为位域布局依赖编译器。",
+ code:`#include <stdio.h>
+struct Frame { unsigned type : 4, flag : 4, value : 8; };   /* 注意位序依赖实现 */
+int main(void){
+    unsigned x;
+    scanf("%u", &x);
+    unsigned type  = (x >> 12) & 0xFu;
+    unsigned flag  = (x >> 8)  & 0xFu;
+    unsigned value =  x        & 0xFFu;
+    printf("%u %u %u\\n", type, flag, value);
+    struct Frame f = { type, flag, value };
+    printf("位域写回校验: %u\\n", *(unsigned *)&f & 0xFFFFu);
+    return 0;
+}`},
+{t:4,d:"<30 min",title:"位运算基础操作",q:"对给定的无符号整数 x，依次输出：(1) 第 3 位置 1 后的值；(2) 第 5 位清 0 后的值；(3) 第 7 位取反后的值；(4) 二进制中 1 的个数；(5) 最低位 1 所对应的值（lowbit）。",
+ input:"一行，无符号整数 x（0 ≤ x < 2^31）",output:"五行，每行一个结果",
+ sample:"输入：10\\n输出：\\n14\\n10\\n138\\n2\\n2",
+ hint:"置位 x|=1u<<k；清位 x&=~(1u<<k)；取反 x^=1u<<k；统计用 x&=x-1 循环；lowbit = x & -x（无符号下等价 x & (~x+1)）。",
+ code:`#include <stdio.h>
+int main(void){
+    unsigned x;
+    scanf("%u", &x);
+    printf("%u\\n", x | (1u << 3));
+    printf("%u\\n", x & ~(1u << 5));
+    printf("%u\\n", x ^ (1u << 7));
+    unsigned t = x, c = 0;
+    while (t) { t &= t - 1; c++; }
+    printf("%u\\n", c);
+    printf("%u\\n", x & (~x + 1u));      /* lowbit */
+    return 0;
+}`},
+{t:4,d:"<30 min",title:"大小端判定（联合体）",q:"编写程序判断当前机器是大端还是小端，并输出 LITTLE 或 BIG。要求使用 union 实现。",
+ input:"无",output:"LITTLE 或 BIG",
+ hint:"union 的成员共享内存：写入 int 1 后读最低地址的那个字节，为 1 即小端。嵌入式里跨平台通信必须处理这个差异。",
+ code:`#include <stdio.h>
+int main(void){
+    union { unsigned int i; unsigned char c[4]; } u;
+    u.i = 1u;
+    puts(u.c[0] == 1u ? "LITTLE" : "BIG");
+    return 0;
+}`},
+{t:4,d:"<35 min",title:"二进制回文数",q:"输入一个非负整数，判断它的二进制表示（不含前导零）是否为回文。是输出 YES，否则 NO。",
+ input:"一行，非负整数 n（0 ≤ n ≤ 2^31-1）",output:"YES 或 NO",
+ hint:"取出二进制各位放入数组，双指针对撞比较；注意 n=0 视为 YES。",
+ code:`#include <stdio.h>
+int main(void){
+    unsigned x; int b[40], m = 0;
+    scanf("%u", &x);
+    if (x == 0) { puts("YES"); return 0; }
+    while (x) { b[m++] = (int)(x & 1u); x >>= 1; }
+    for (int i = 0, j = m - 1; i < j; i++, j--)
+        if (b[i] != b[j]) { puts("NO"); return 0; }
+    puts("YES");
+    return 0;
+}`},
+{t:4,d:"<35 min",title:"用结构体+函数指针模拟寄存器操作",q:"模拟一个 8 位控制寄存器：支持命令 S bit（置位）、C bit（清位）、T bit（翻转）、R（读当前值）。按命令输出结果。",
+ input:"第一行若干命令，每条一行，以 Q 结束；初始值为 0",output:"R 命令输出当前寄存器值（十进制）",
+ sample:"输入：\\nS 0\\nS 3\\nR\\nT 0\\nR\\nQ\\n输出：\\n9\\n8",
+ hint:"把操作做成函数指针表 struct { char cmd; void (*fn)(int); }，这正是驱动里 file_operations / 命令表的设计思想。",
+ code:`#include <stdio.h>
+#include <string.h>
+static unsigned char reg = 0;
+static void do_set(int b){ reg |= (unsigned char)(1u << b); }
+static void do_clr(int b){ reg &= (unsigned char)~(1u << b); }
+static void do_tog(int b){ reg ^= (unsigned char)(1u << b); }
+int main(void){
+    char cmd[8]; int b;
+    while (scanf("%s", cmd) == 1) {
+        if (cmd[0] == 'Q') break;
+        if (cmd[0] == 'R') { printf("%u\\n", reg); continue; }
+        if (scanf("%d", &b) != 1) break;
+        switch (cmd[0]) {
+            case 'S': do_set(b); break;
+            case 'C': do_clr(b); break;
+            case 'T': do_tog(b); break;
+        }
+    }
+    return 0;
+}`},
+{t:4,d:"<40 min",title:"位运算实现无分支绝对值与符号判断",q:"不使用 if、三目运算和 abs 函数，仅用位运算求整数 x 的绝对值，并输出结果的二进制中 1 的个数。",
+ input:"一行，整数 x（-2^30 ≤ x ≤ 2^30）",output:"一行：|x| 与 |x| 二进制中 1 的个数",
+ sample:"输入：-10\\n输出：10 2",
+ hint:"常用位技巧：mask = x >> 31（算术右移得到 0 或 -1），abs = (x + mask) ^ mask。理解补码是嵌入式的必修课。",
+ code:`#include <stdio.h>
+int main(void){
+    int x; unsigned a, c = 0;
+    scanf("%d", &x);
+    int mask = x >> 31;                 /* x>=0 -> 0 ; x<0 -> -1 */
+    a = (unsigned)((x + mask) ^ mask);  /* 无分支绝对值 */
+    unsigned t = a;
+    while (t) { t &= t - 1; c++; }
+    printf("%u %u\\n", a, c);
+    return 0;
+}`},
+
+/* ---------- T5 进阶算法与嵌入式场景 ---------- */
+{t:5,d:"<35 min",title:"斐波那契（矩阵快速幂）",q:"求斐波那契数列第 n 项对 1000000007 取模的结果，n 可达到 10^18。",
+ input:"一行，整数 n（0 ≤ n ≤ 10^18）",output:"一行，F(n) mod 1e9+7",
+ sample:"输入：10\\n输出：55",
+ hint:"普通递归是指数复杂度必超时；用矩阵快速幂或快速倍增法，O(log n)。注意用 long long 与取模防溢出。",
+ code:`#include <stdio.h>
+#define MOD 1000000007LL
+typedef struct { long long a[2][2]; } M;
+static M mul(M x, M y){
+    M r = {{{0,0},{0,0}}};
+    for (int i = 0; i < 2; i++)
+        for (int k = 0; k < 2; k++) if (x.a[i][k])
+            for (int j = 0; j < 2; j++)
+                r.a[i][j] = (r.a[i][j] + x.a[i][k] * y.a[k][j]) % MOD;
+    return r;
+}
+int main(void){
+    long long n; scanf("%lld", &n);
+    M base = {{{1,1},{1,0}}}, res = {{{1,0},{0,1}}};
+    while (n) { if (n & 1) res = mul(res, base); base = mul(base, base); n >>= 1; }
+    printf("%lld\\n", res.a[0][1]);
+    return 0;
+}`},
+{t:5,d:"<35 min",title:"爬楼梯（动态规划）",q:"一次可以爬 1 级或 2 级台阶，求爬到第 n 级的方案数，结果对 1000000007 取模。",
+ input:"一行，整数 n（1 ≤ n ≤ 10^6）",output:"一行，方案数",
+ sample:"输入：4\\n输出：5",
+ hint:"dp[i]=dp[i-1]+dp[i-2]，只需保留前两项（滚动变量），空间 O(1)。",
+ code:`#include <stdio.h>
+#define MOD 1000000007LL
+int main(void){
+    int n; scanf("%d", &n);
+    long long a = 1, b = 1;             /* dp[0]=1, dp[1]=1 */
+    for (int i = 2; i <= n; i++) { long long c = (a + b) % MOD; a = b; b = c; }
+    printf("%lld\\n", b);
+    return 0;
+}`},
+{t:5,d:"<40 min",title:"浮点数比较的坑（概念 + 代码）",q:"读入两个实数 a、b，判断它们是否「相等」。要求不能直接用 ==，比较时允许 1e-9 的误差，相等输出 EQUAL，否则输出 DIFF。",
+ input:"一行，两个实数",output:"EQUAL 或 DIFF",
+ sample:"输入：0.1 0.1000000000000001\\n输出：EQUAL",
+ hint:"IEEE754 无法精确表示 0.1，浮点相等必须用 fabs(a-b) < eps；工程上更推荐相对误差比较。",
+ code:`#include <stdio.h>
+#include <math.h>
+int main(void){
+    double a, b;
+    scanf("%lf %lf", &a, &b);
+    double diff = fabs(a - b);
+    double scale = fmax(1.0, fmax(fabs(a), fabs(b)));   /* 相对误差 */
+    puts(diff <= 1e-9 * scale ? "EQUAL" : "DIFF");
+    return 0;
+}`},
+{t:5,d:"<40 min",title:"快速排序（自己实现）",q:"自己实现快速排序（不使用库函数），对 n 个整数升序排序并输出。",
+ input:"第一行 n（1 ≤ n ≤ 10^5）；第二行 n 个整数",output:"一行，升序结果",
+ sample:"输入：5\\n3 1 4 1 5\\n输出：1 1 3 4 5",
+ hint:"选基准 + 双指针划分 + 递归；注意最坏 O(n²) 与相等元素导致的划分退化，可用随机基准或三数取中。",
+ code:`#include <stdio.h>
+#include <stdlib.h>
+static int a[100005];
+static void qsort_rec(int l, int r){
+    if (l >= r) return;
+    int i = l, j = r, p = a[l + (r - l) / 2];   /* 取中间值作基准，避开已排序的最坏情况 */
+    while (i <= j) {
+        while (a[i] < p) i++;
+        while (a[j] > p) j--;
+        if (i <= j) { int t = a[i]; a[i] = a[j]; a[j] = t; i++; j--; }
+    }
+    qsort_rec(l, j); qsort_rec(i, r);
+}
+int main(void){
+    int n; scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    qsort_rec(0, n - 1);
+    for (int i = 0; i < n; i++) printf("%d%c", a[i], i == n-1 ? '\\n' : ' ');
+    return 0;
+}`},
+{t:5,d:"<40 min",title:"整数溢出与安全加法（嵌入式高频）",q:"读入两个 64 位整数 a、b，判断 a+b 是否会发生有符号溢出；溢出输出 OVERFLOW，否则输出结果。",
+ input:"一行，两个整数",output:"结果或 OVERFLOW",
+ sample:"输入：9223372036854775807 1\\n输出：OVERFLOW",
+ hint:"不能先算再判断（溢出是未定义行为）。用边界判断：b>0 && a>LLONG_MAX-b 则上溢，b<0 && a<LLONG_MIN-b 则下溢。",
+ code:`#include <stdio.h>
+#include <limits.h>
+int main(void){
+    long long a, b;
+    scanf("%lld %lld", &a, &b);
+    if (b > 0 && a > LLONG_MAX - b) { puts("OVERFLOW"); return 0; }
+    if (b < 0 && a < LLONG_MIN - b) { puts("OVERFLOW"); return 0; }
+    printf("%lld\\n", a + b);
+    return 0;
+}`},
+{t:5,d:"<45 min",title:"模拟传感器滑动平均滤波",q:"给定 n 个采样值，对每个位置输出以它结尾、窗口大小为 k 的滑动平均值（不足 k 个时用已有数据平均），保留 2 位小数。",
+ input:"第一行 n 与 k（1 ≤ k ≤ n ≤ 10^5）；第二行 n 个整数采样值",output:"n 行，每行一个保留 2 位小数的平均值",
+ sample:"输入：4 2\\n10 20 30 40\\n输出：\\n10.00\\n15.00\\n25.00\\n35.00",
+ hint:"不要每个窗口重新求和（O(nk) 会超时），维护滑动窗口和 sum += a[i] - a[i-k]；这是嵌入式滤波最常用的写法。",
+ code:`#include <stdio.h>
+int main(void){
+    int n, k; static long long a[100005];
+    scanf("%d %d", &n, &k);
+    for (int i = 0; i < n; i++) scanf("%lld", &a[i]);
+    long long sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum += a[i];
+        if (i >= k) sum -= a[i - k];
+        int cnt = (i + 1 < k) ? i + 1 : k;
+        printf("%.2f\\n", (double)sum / cnt);
+    }
+    return 0;
+}`},
+{t:5,d:"<45 min",title:"中缀表达式求值（栈）",q:"计算只含 + - * / 和非负整数、允许括号的中缀表达式的值，整数运算。",
+ input:"一行，合法表达式（长度 ≤ 1000）",output:"一行，整数结果",
+ hint:"双栈法（操作数栈 + 运算符栈）或转后缀再求值；比较运算符优先级，遇到 ) 时弹出到 (。这是编译器与协议解析的基础。",
+ code:`#include <stdio.h>
+#include <ctype.h>
+static long long num[1005]; static char op[1005]; static int nt, ot;
+static int prec(char c){ return (c == '+' || c == '-') ? 1 : (c == '*' || c == '/') ? 2 : 0; }
+static void apply(void){
+    long long b = num[--nt], a = num[--nt]; char c = op[--ot];
+    long long r = (c == '+') ? a + b : (c == '-') ? a - b : (c == '*') ? a * b : a / b;
+    num[nt++] = r;
+}
+int main(void){
+    char s[1005]; scanf("%s", s);
+    for (int i = 0; s[i]; ) {
+        if (isdigit((unsigned char)s[i])) {
+            long long v = 0;
+            while (isdigit((unsigned char)s[i])) v = v * 10 + (s[i++] - '0');
+            num[nt++] = v;
+        } else if (s[i] == '(') { op[ot++] = s[i++]; }
+        else if (s[i] == ')') {
+            while (ot && op[ot-1] != '(') apply();
+            if (ot) ot--;                       /* 弹出 '(' */
+            i++;
+        } else {
+            while (ot && prec(op[ot-1]) >= prec(s[i])) apply();
+            op[ot++] = s[i++];
+        }
+    }
+    while (ot) apply();
+    printf("%lld\\n", num[0]);
+    return 0;
+}`},
+{t:5,d:">60 min",title:"最长递增子序列（O(n log n)）",q:"给定 n 个整数，求最长严格递增子序列的长度。",
+ input:"第一行 n（1 ≤ n ≤ 10^5）；第二行 n 个整数",output:"一行，长度",
+ sample:"输入：8\\n10 9 2 5 3 7 101 18\\n输出：4",
+ hint:"维护 tails 数组（长度为 len 的递增子序列的最小结尾），对每个元素二分找第一个 ≥ 它的位置替换；注意严格递增用 lower_bound。",
+ code:`#include <stdio.h>
+static int a[100005], tails[100005];
+int main(void){
+    int n; scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    int len = 0;
+    for (int i = 0; i < n; i++) {
+        int lo = 0, hi = len;
+        while (lo < hi) { int mid = (lo + hi) / 2; if (tails[mid] < a[i]) lo = mid + 1; else hi = mid; }
+        tails[lo] = a[i];
+        if (lo == len) len++;
+    }
+    printf("%d\\n", len);
+    return 0;
+}`},
+{t:5,d:">60 min",title:"简易状态机解析通信协议",q:"按下列帧格式解析输入流并输出每条帧的内容：帧以 0xAA 开头、0x55 结尾，中间为长度字节 len（1~8）和 len 个数据字节。若出现非法帧（长度非法或缺少结束符）输出 FRAME_ERR。输入以 -1 结束。",
+ input:"若干十进制字节值（0~255），以 -1 结束",output:"每解析出一条合法帧，输出 FRAME: d1 d2 ...；非法则 FRAME_ERR",
+ hint:"用状态机而不是嵌套 if：状态 = 等帧头 / 读长度 / 读数据 / 等帧尾；这是嵌入式协议解析的标准写法，也是面试常考题。",
+ code:`#include <stdio.h>
+enum { S_HEAD, S_LEN, S_DATA, S_TAIL };
+int main(void){
+    int v, st = S_HEAD, len = 0, idx = 0, data[16];
+    while (scanf("%d", &v) == 1 && v != -1) {
+        switch (st) {
+            case S_HEAD: if (v == 0xAA) st = S_LEN; break;
+            case S_LEN:
+                if (v >= 1 && v <= 8) { len = v; idx = 0; st = S_DATA; }
+                else { puts("FRAME_ERR"); st = S_HEAD; }
+                break;
+            case S_DATA:
+                data[idx++] = v;
+                if (idx == len) st = S_TAIL;
+                break;
+            case S_TAIL:
+                if (v == 0x55) {
+                    printf("FRAME:");
+                    for (int i = 0; i < len; i++) printf(" %d", data[i]);
+                    putchar('\\n');
+                } else {
+                    puts("FRAME_ERR");
+                }
+                st = S_HEAD;
+                break;
+        }
+    }
+    if (st != S_HEAD) puts("FRAME_ERR");    /* 流在帧中间结束 */
+    return 0;
+}`}
+];
+const TIERS = {
+ 1:{n:"T1 · 基础"},2:{n:"T2 · 数组与字符串"},3:{n:"T3 · 指针与内存"},
+ 4:{n:"T4 · 结构体与位运算"},5:{n:"T5 · 进阶与嵌入式"}
+};
+
+/* ==================== 四、存储 ==================== */
+const LS = "embed_all_v2";
+let store = {
+  weeks:{}, quiz:{}, cdone:{},
+  settings:{start:"", target:12.5, goal:"研二寒假投递大厂实习"}
+};
 function load(){
-  try{ const s = localStorage.getItem(LS); if(s){ const o = JSON.parse(s); store = Object.assign(store, o);
-    store.settings = Object.assign({start:"",target:12.5,goal:"研二寒假投递大厂实习"}, o.settings||{});
-    store.weeks = o.weeks||{}; store.quiz = o.quiz||{}; } }catch(e){}
-  if(!store.settings.start){
+  try{
+    const s = localStorage.getItem(LS);
+    if (s){
+      const o = JSON.parse(s);
+      store.weeks = o.weeks || {};
+      store.quiz = o.quiz || {};
+      store.cdone = o.cdone || {};
+      store.settings = Object.assign({start:"",target:12.5,goal:"研二寒假投递大厂实习"}, o.settings || {});
+    }
+  }catch(e){}
+  if (!store.settings.start){
     const d = new Date(); const day = d.getDay(); const diff = (day===0?-6:1-day);
     d.setDate(d.getDate()+diff);
-    store.settings.start = d.toISOString().slice(0,10); save();
+    store.settings.start = d.toISOString().slice(0,10);
+    save();
   }
 }
-function save(){ try{ localStorage.setItem(LS, JSON.stringify(store)); }catch(e){ toast("存储失败，请用导出备份"); } }
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(store)); }catch(e){ toast("存储失败，请导出备份"); } }
 function wk(i){ if(!store.weeks[i]) store.weeks[i]={tasks:[],tests:[],status:"",hours:"",note:""}; return store.weeks[i]; }
 
-/* ============ 工具 ============ */
+/* ==================== 五、工具 ==================== */
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),1800); }
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),1700); }
 function pad(n){ return String(n).padStart(2,'0'); }
-function weekDates(i){ // i = 1..40
-  const s = store.settings.start; if(!s) return "";
-  const d0 = new Date(s+"T00:00:00"); const a = new Date(d0); a.setDate(a.getDate()+(i-1)*7);
-  const b = new Date(a); b.setDate(b.getDate()+6);
-  return `${a.getMonth()+1}/${a.getDate()}–${b.getMonth()+1}/${b.getDate()}`;
-}
 function startDateObj(){ return new Date(store.settings.start+"T00:00:00"); }
-function currentWeek(){
-  const days = Math.floor((Date.now()-startDateObj().getTime())/86400000);
-  return Math.min(40, Math.max(1, Math.floor(days/7)+1));
-}
+function weekDates(i){ const d0=startDateObj(); const a=new Date(d0); a.setDate(a.getDate()+(i-1)*7);
+  const b=new Date(a); b.setDate(b.getDate()+6);
+  return `${a.getMonth()+1}/${a.getDate()}–${b.getMonth()+1}/${b.getDate()}`; }
+function currentWeek(){ const days=Math.floor((Date.now()-startDateObj().getTime())/86400000);
+  return Math.min(40, Math.max(1, Math.floor(days/7)+1)); }
 function weekOK(i){ const d=store.weeks[i]; if(!d) return false;
-  const W=WEEKS[i-1]; return d.status==="ok" || (d.tasks||[]).filter(Boolean).length>=W.topics.length; }
+  const W=WEEKS[i-1]; return d.status==="ok" || ((d.tasks||[]).filter(Boolean).length>=W.topics.length && d.status!=="bad"); }
+function snapshotOpen(){ const bodies=[],blks=[];
+  document.querySelectorAll('.body').forEach(e=>{ if(e.style.display!=='none') bodies.push(e.id); });
+  document.querySelectorAll('details.blk').forEach((e,k)=>{ if(e.open) blks.push(k); });
+  return {bodies,blks}; }
+function restoreOpen(snap){
+  (snap.bodies||[]).forEach(id=>{ const e=document.getElementById(id); if(e){ e.style.display='block';
+    const c=document.getElementById('ch'+id.slice(1)); if(c) c.classList.add('r'); } });
+  document.querySelectorAll('details.blk').forEach((e,k)=>{ if((snap.blks||[]).includes(k)) e.open=true; });
+}
 
-/* ============ 渲染：打卡 ============ */
-function render(){
+/* ==================== 六、模式与导航 ==================== */
+let mode = "embed";
+function setMode(m){
+  mode = m;
+  document.body.classList.toggle('amber', m==='c');
+  const other = m==='embed' ? 'c' : 'embed';
+  document.getElementById('mEmbed').classList.toggle('on', m==='embed');
+  document.getElementById('mC').classList.toggle('on', m==='c');
+  document.getElementById('mC').classList.toggle('amber', m==='c');
+  document.getElementById('navEmbed').style.display = m==='embed' ? 'flex' : 'none';
+  document.getElementById('navC').style.display = m==='c' ? 'flex' : 'none';
+  document.getElementById('appTitle').textContent = m==='embed' ? '嵌入式学习打卡' : 'C 语言刷题 · 基础到难';
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  if (m==='embed'){
+    const btn = document.querySelector('#navEmbed button.on') || document.querySelector('#navEmbed button');
+    document.querySelectorAll('#navEmbed button').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on');
+    showView(btn.dataset.v);
+  } else {
+    const btn = document.querySelector('#navC button.on') || document.querySelector('#navC button');
+    document.querySelectorAll('#navC button').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on');
+    showView(btn.dataset.v);
+  }
+  window.scrollTo(0,0);
+}
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el = document.getElementById('v-'+name);
+  if (el) el.classList.add('active');
+  if (name==='weeks') renderWeeks();
+  if (name==='quiz') renderQuiz();
+  if (name==='stat') renderStat();
+  if (name==='set') renderSet();
+  if (name==='clist') renderC();
+  if (name==='cstat') renderCStat();
+  updateHeader();
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  const parent = b.parentElement;
+  parent.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  showView(b.dataset.v);
+  window.scrollTo(0,0);
+});
+
+/* ==================== 七、顶部概览 ==================== */
+function updateHeader(){
+  const sub = document.getElementById('subLine');
+  if (mode==='embed'){
+    const cur = currentWeek();
+    const done = WEEKS.filter((_,k)=>weekOK(k+1)).length;
+    document.getElementById('topBar').style.width = (done/40*100).toFixed(1)+'%';
+    const d40 = new Date(startDateObj()); d40.setDate(d40.getDate()+40*7);
+    sub.innerHTML = `目标：<b>${store.settings.goal}</b>　第 <b>${cur}</b>/40 周　已完成 <b>${done}</b> 周　距投递 <b>${Math.max(0,40-cur)}</b> 周`;
+  } else {
+    const all = P.length, done = Object.keys(store.cdone).filter(k=>store.cdone[k]).length;
+    document.getElementById('topBar').style.width = (all?(done/all*100):0).toFixed(1)+'%';
+    sub.innerHTML = `共 <b>${all}</b> 题　已过 <b>${done}</b> 题　进度 <b>${all?Math.round(done/all*100):0}%</b>`;
+  }
+}
+
+/* ==================== 八、打卡页 ==================== */
+function renderWeeks(){
   const cur = currentWeek();
-  document.getElementById('weekNow').textContent = cur;
-  const done = WEEKS.filter((_,k)=>weekOK(k+1)).length;
-  document.getElementById('weekDone').textContent = done;
-  document.getElementById('topBar').style.width = (done/40*100).toFixed(1)+'%';
-  document.getElementById('goalTxt').textContent = store.settings.goal;
-
-  // 投递倒计时
   const d40 = new Date(startDateObj()); d40.setDate(d40.getDate()+40*7);
   const left = Math.ceil((d40-Date.now())/86400000);
-  const leftWeeks = 40-cur;
-  document.getElementById('startNotice').innerHTML =
-    left>0 ? `距第 40 周（正式投递）还有 <b>${leftWeeks} 周</b>（约 ${Math.floor(left/30)} 个月），投递窗口目标：<b>${d40.getFullYear()}年${d40.getMonth()+1}月初</b>。本周应为第 <b>${cur}</b> 周。`
-           : `计划周期已结束，进入投递与面试阶段。`;
+  document.getElementById('startNotice').innerHTML = left>0
+    ? `距第 40 周（正式投递）还有 <b>${40-cur} 周</b>（约 ${Math.floor(left/30)} 个月），目标窗口：<b>${d40.getFullYear()}年${d40.getMonth()+1}月初</b>。本周应为第 <b>${cur}</b> 周。`
+    : `计划周期已结束，进入投递与面试阶段。`;
 
-  // 按块分组
   const blocks = [];
   WEEKS.forEach((W,k)=>{ const i=k+1; let b=blocks.find(x=>x.n===W.block);
-    if(!b){ b={n:W.block, list:[]}; blocks.push(b); } b.list.push({W,i}); });
+    if(!b){ b={n:W.block,list:[]}; blocks.push(b); } b.list.push({W,i}); });
 
   document.getElementById('weekList').innerHTML = blocks.map(b=>{
     const okN = b.list.filter(x=>weekOK(x.i)).length;
     return `<details class="blk" ${b.list.some(x=>x.i===cur)?"open":""}>
-      <summary>${b.n}<span class="n">${okN}/${b.list.length} 周完成</span></summary>
+      <summary>${b.n}<span class="n">${okN}/${b.list.length} 周</span></summary>
       <div class="inner">${b.list.map(({W,i})=>cardHTML(W,i,cur)).join('')}</div>
     </details>`;
   }).join('');
 }
-
 function cardHTML(W,i,cur){
   const d = wk(i); const ok = weekOK(i);
   const statusPill = d.status==="ok" ? '<span class="pill ok">✅ 通过</span>'
     : d.status==="warn" ? '<span class="pill warn">⚠️ 及格（记欠账）</span>'
     : d.status==="bad" ? '<span class="pill bad">❌ 不通过</span>'
     : ok ? '<span class="pill ok">已达标</span>' : '<span class="pill">未开始</span>';
-  const curPill = (i===cur) ? '<span class="pill pri">本周</span>' : '';
-  const tDone = (d.tasks||[]).filter(Boolean).length, tAll = W.topics.length;
-  const kDone = (d.tests||[]).filter(Boolean).length, kAll = W.tests.length;
-
-  return `<div class="card ${(ok&&d.status!=='bad')?'done':(i===cur?'open':'')}" id="c${i}">
+  const tDone=(d.tasks||[]).filter(Boolean).length, tAll=W.topics.length;
+  const kDone=(d.tests||[]).filter(Boolean).length, kAll=W.tests.length;
+  return `<div class="card ${(ok&&d.status!=='bad')?'done':(i===cur?'open':'')}">
     <div class="card-h" onclick="toggle(${i})">
       <div class="wk">第${W.w}周</div>
       <div class="card-t">${W.title}</div>
       <div class="chev" id="ch${i}">›</div>
     </div>
-    <div class="card-m">${W.phase} · ${weekDates(i)} · 任务 ${tDone}/${tAll} · 检验 ${kDone}/${kAll} ${statusPill}${curPill}</div>
+    <div class="card-m">${W.phase} · ${weekDates(i)} · 任务 ${tDone}/${tAll} · 检验 ${kDone}/${kAll} ${statusPill}${i===cur?' <span class="pill pri">本周</span>':''}</div>
     <div class="body" id="b${i}" style="display:none">
       <div class="sec-t">必做任务</div>
       ${W.topics.map((t,k)=>`<label class="chk"><input type="checkbox" ${d.tasks[k]?"checked":""} onchange="setTask(${i},${k},this.checked)"><span>${t}</span></label>`).join('')}
@@ -575,42 +1463,32 @@ function cardHTML(W,i,cur){
         <div class="btn bad" onclick="setStatus(${i},'bad')">❌ 不通过</div>
       </div>
       <div class="sec-t">投入与复盘</div>
-      <div class="row"><span class="lbl">实际</span><input type="number" step="0.5" min="0" placeholder="小时" value="${d.hours||''}" onchange="setField(${i},'hours',this.value)"><span class="lbl">目标 ${store.settings.target}h</span></div>
+      <div class="row"><span class="lbl">实际</span>
+        <input type="number" step="0.5" min="0" placeholder="小时" value="${d.hours||''}" onchange="setField(${i},'hours',this.value)">
+        <span class="lbl">目标 ${store.settings.target}h</span></div>
       <textarea placeholder="卡住最久的问题 / 根因与解法 / 欠账（3 行）" onchange="setField(${i},'note',this.value)">${d.note||''}</textarea>
     </div>
   </div>`;
 }
 function toggle(i){
   const b=document.getElementById('b'+i), c=document.getElementById('ch'+i);
-  const open = b.style.display!=='none';
+  const open = b.style.display==='block';
   b.style.display = open?'none':'block';
   c.classList.toggle('r', !open);
 }
-/* 记录在重绘前仍展开的周与块，重绘后恢复展开状态 */
-function snapshotOpen(){
-  const bodies=[], blks=[];
-  document.querySelectorAll('.body').forEach(e=>{ if(e.style.display!=='none') bodies.push(e.id); });
-  document.querySelectorAll('details.blk').forEach((e,k)=>{ if(e.open) blks.push(k); });
-  return {bodies, blks};
-}
-function restoreOpen(snap){
-  (snap.bodies||[]).forEach(id=>{ const e=document.getElementById(id); if(e) e.style.display='block';
-    const c=document.getElementById('ch'+id.slice(1)); if(c) c.classList.add('r'); });
-  document.querySelectorAll('details.blk').forEach((e,k)=>{ if((snap.blks||[]).includes(k)) e.open=true; });
-}
-function rerenderKeep(i){
+function afterWeekChange(i){
   const snap = snapshotOpen();
-  renderStat(); render();
+  updateHeader(); renderWeeks(); renderStat();
   restoreOpen(snap);
 }
-function setTask(i,k,v){ const d=wk(i); d.tasks[k]=v; save(); rerenderKeep(i); }
-function setTest(i,k,v){ const d=wk(i); d.tests[k]=v; save(); rerenderKeep(i); }
+function setTask(i,k,v){ wk(i).tasks[k]=v; save(); afterWeekChange(i); }
+function setTest(i,k,v){ wk(i).tests[k]=v; save(); afterWeekChange(i); }
 function setStatus(i,s){ const d=wk(i); d.status = (d.status===s?'':s); save();
   toast(d.status==='ok'?'第'+i+'周：通过 ✅':d.status==='warn'?'第'+i+'周：及格（已记欠账）':d.status==='bad'?'第'+i+'周：不通过，用机动周补':'已清除状态');
-  rerenderKeep(i); }
+  afterWeekChange(i); }
 function setField(i,f,v){ wk(i)[f]=v; save(); }
 
-/* ============ 渲染：题库 ============ */
+/* ==================== 九、周测页 ==================== */
 function renderQuiz(){
   document.getElementById('quizGroups').innerHTML = QUIZ.map((G,gi)=>{
     const rec = store.quiz[gi]||{};
@@ -619,7 +1497,7 @@ function renderQuiz(){
       <div class="inner">
         ${G.qs.map((q,qi)=>`<div class="q" id="q${gi}_${qi}">
           <div class="qh" onclick="document.getElementById('q${gi}_${qi}').classList.toggle('show')">
-            <div class="num">${qi+1}</div><div class="qt">${q[0].replace(/\n/g,'<br>')}</div>
+            <div class="num">${qi+1}</div><div class="qt">${q[0].replace(/\\n/g,'<br>')}</div>
           </div>
           <div class="qa"><b>要点：</b>${q[1]}</div>
           <div class="btns"><div class="btn" onclick="document.getElementById('q${gi}_${qi}').classList.toggle('show')">看答案</div></div>
@@ -633,104 +1511,165 @@ function renderQuiz(){
   }).join('');
 }
 function setScore(gi,v){
-  if(v===''){ delete store.quiz[gi]; } else {
-    store.quiz[gi] = {score: Number(v), date: new Date().toISOString().slice(0,10)};
-  }
+  if(v===''){ delete store.quiz[gi]; } else { store.quiz[gi]={score:Number(v), date:new Date().toISOString().slice(0,10)}; }
   save();
   toast(v===''?'已清除':'已记录 '+v+' 分'+(Number(v)<QUIZ[gi].pass?'（未过线，记入错题本）':' ✅ 通过'));
-  const snap = snapshotOpen();
-  renderQuiz(); renderStat();
-  restoreOpen(snap);
+  const snap = snapshotOpen(); renderQuiz(); restoreOpen(snap);
 }
 
-/* ============ 渲染：统计 ============ */
+/* ==================== 十、统计页 ==================== */
 function renderStat(){
   const cur = currentWeek();
   const done = WEEKS.filter((_,k)=>weekOK(k+1)).length;
-  let hours=0, bad=0, warn=0;
+  let hours=0,bad=0,warn=0;
   WEEKS.forEach((_,k)=>{ const d=store.weeks[k+1]; if(!d) return;
     hours += Number(d.hours||0); if(d.status==='bad') bad++; if(d.status==='warn') warn++; });
-  let tasksDone=0, tasksAll=0, testsDone=0, testsAll=0;
+  let tD=0,tA=0,kD=0,kA=0;
   WEEKS.forEach((W,k)=>{ const d=store.weeks[k+1]||{};
-    tasksAll+=W.topics.length; tasksDone+=(d.tasks||[]).filter(Boolean).length;
-    testsAll+=W.tests.length; testsDone+=(d.tests||[]).filter(Boolean).length; });
+    tA+=W.topics.length; tD+=(d.tasks||[]).filter(Boolean).length;
+    kA+=W.tests.length; kD+=(d.tests||[]).filter(Boolean).length; });
   const quizzes = Object.keys(store.quiz).length;
-
+  const cAll = P.length, cDone = Object.keys(store.cdone).filter(k=>store.cdone[k]).length;
   document.getElementById('statGrid').innerHTML = `
     <div class="stat"><div class="v">${done}<span style="font-size:13px;color:var(--dim)">/40</span></div><div class="l">已完成周数</div></div>
     <div class="stat"><div class="v">${hours.toFixed(1)}<span style="font-size:13px;color:var(--dim)"> h</span></div><div class="l">累计投入（目标 ${(cur*store.settings.target).toFixed(0)} h）</div></div>
-    <div class="stat"><div class="v">${tasksAll?Math.round(tasksDone/tasksAll*100):0}<span style="font-size:13px;color:var(--dim)">%</span></div><div class="l">任务完成 ${tasksDone}/${tasksAll}</div></div>
-    <div class="stat"><div class="v">${testsAll?Math.round(testsDone/testsAll*100):0}<span style="font-size:13px;color:var(--dim)">%</span></div><div class="l">检验通过 ${testsDone}/${testsAll}</div></div>
+    <div class="stat"><div class="v">${tA?Math.round(tD/tA*100):0}<span style="font-size:13px;color:var(--dim)">%</span></div><div class="l">任务完成 ${tD}/${tA}</div></div>
+    <div class="stat"><div class="v">${kA?Math.round(kD/kA*100):0}<span style="font-size:13px;color:var(--dim)">%</span></div><div class="l">检验通过 ${kD}/${kA}</div></div>
     <div class="stat"><div class="v" style="color:var(--warn)">${warn}</div><div class="l">⚠️ 及格（欠账）</div></div>
     <div class="stat"><div class="v" style="color:var(--bad)">${bad}</div><div class="l">❌ 不通过（须补）</div></div>
     <div class="stat"><div class="v">${quizzes}<span style="font-size:13px;color:var(--dim)">/8</span></div><div class="l">已记录测评</div></div>
-    <div class="stat"><div class="v">${Math.max(0,40-cur)}</div><div class="l">距投递剩余周数</div></div>`;
-
+    <div class="stat"><div class="v">${cDone}<span style="font-size:13px;color:var(--dim)">/${cAll}</span></div><div class="l">C 刷题已过</div></div>`;
   document.getElementById('phaseStats').innerHTML = PHASES.map(([name,[a,b]])=>{
-    let wDone=0; for(let i=a;i<=b;i++) if(weekOK(i)) wDone++;
-    const n=b-a+1, pct=Math.round(wDone/n*100);
+    let w=0; for(let i=a;i<=b;i++) if(weekOK(i)) w++;
+    const n=b-a+1;
     return `<div class="card" style="padding:11px 13px">
-      <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:600">
-        <span>${name}</span><span style="color:var(--dim)">${wDone}/${n} 周</span></div>
-      <div class="bar"><i style="width:${pct}%"></i></div></div>`; }).join('');
-
-  const dQ = new Date(startDateObj()); dQ.setDate(dQ.getDate()+24*7);
-  const dS = new Date(startDateObj()); dS.setDate(dS.getDate()+32*7);
-  const d40 = new Date(startDateObj()); d40.setDate(d40.getDate()+40*7);
-  const f = d=>`${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())}`;
-  const tl = [
-    ["第24周", "简历 v1 完成，可开始零星投递练手", f(dQ)],
-    ["第32周", "八股一轮 + 模拟面试 1 次", f(dS)],
-    ["第40周", "正式投递大厂嵌入式实习", f(d40)],
-    ["第41+周", "春招实习高峰（2–4 月），按面试反馈定向补漏", ""]
-  ];
-  document.getElementById('timeline').innerHTML = tl.map(([a,b,c])=>
-    `<li><span class="t">${a}</span><span>${b}<br><span style="color:var(--dim2);font-size:11.5px">${c}</span></span></li>`).join('');
+      <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600">
+        <span>${name}</span><span style="color:var(--dim)">${w}/${n} 周</span></div>
+      <div class="bar"><i style="width:${Math.round(w/n*100)}%"></i></div></div>`; }).join('');
+  const mk=(wkN)=>{ const d=new Date(startDateObj()); d.setDate(d.getDate()+wkN*7); return d; };
+  const f=d=>`${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())}`;
+  document.getElementById('timeline').innerHTML = [
+    ["第24周","简历 v1 完成，开始零星投递练手",f(mk(24))],
+    ["第32周","八股一轮 + 模拟面试 1 次",f(mk(32))],
+    ["第40周","正式投递大厂嵌入式实习",f(mk(40))],
+    ["第41+周","春招实习高峰（2–4 月），按面试反馈定向补漏",""]
+  ].map(([a,b,c])=>`<li><span class="t">${a}</span><span>${b}<br><span style="color:var(--dim2);font-size:11.5px">${c}</span></span></li>`).join('');
 }
 
-/* ============ 设置与数据 ============ */
+/* ==================== 十一、设置与数据 ==================== */
 function renderSet(){
   document.getElementById('startDate').value = store.settings.start;
   document.getElementById('wkTarget').value = store.settings.target;
   document.getElementById('goalInput').value = store.settings.goal;
 }
-function saveStart(){ store.settings.start = document.getElementById('startDate').value; save(); rerenderKeep(); toast('已更新：第 1 周 = '+store.settings.start); }
-function saveTarget(){ store.settings.target = Number(document.getElementById('wkTarget').value)||12.5; save(); toast('每周目标已设为 '+store.settings.target+' h'); }
-function saveGoal(){ store.settings.goal = document.getElementById('goalInput').value; save(); render(); toast('已保存目标'); }
-function exportData(){
+function saveStart(){ store.settings.start=document.getElementById('startDate').value; save();
+  updateHeader(); renderWeeks(); renderStat(); toast('已更新：第 1 周 = '+store.settings.start); }
+function saveTarget(){ store.settings.target=Number(document.getElementById('wkTarget').value)||12.5; save(); toast('每周目标 '+store.settings.target+' h'); }
+function saveGoal(){ store.settings.goal=document.getElementById('goalInput').value; save(); updateHeader(); toast('已保存目标'); }
+function exportAll(){
   const blob = new Blob([JSON.stringify(store,null,2)],{type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = '嵌入式打卡备份_'+new Date().toISOString().slice(0,10)+'.json';
-  a.click(); toast('已导出，请存到「文件」App');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='嵌入式学习备份_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  toast('已导出，请存到「文件」App');
 }
-function importData(inp){
-  const f = inp.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ()=>{ try{ const o=JSON.parse(r.result); store=Object.assign(store,o);
-    store.settings=Object.assign({start:"",target:12.5,goal:"研二寒假投递大厂实习"},o.settings||{});
-    store.weeks=o.weeks||{}; store.quiz=o.quiz||{}; save(); renderAll(); toast('导入成功'); }
-    catch(e){ toast('文件格式不对'); } };
+function importAll(inp){
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const o=JSON.parse(r.result);
+    store.weeks=o.weeks||{}; store.quiz=o.quiz||{}; store.cdone=o.cdone||{};
+    store.settings=Object.assign({start:store.settings.start,target:12.5,goal:"研二寒假投递大厂实习"},o.settings||{});
+    save(); renderAll(); toast('导入成功'); }catch(e){ toast('文件格式不对'); } };
   r.readAsText(f); inp.value='';
 }
 function resetAll(){
-  if(!confirm('确定清空全部打卡数据？建议先导出备份。')) return;
-  store = {weeks:{},quiz:{},settings:{start:store.settings.start,target:store.settings.target,goal:store.settings.goal}};
+  if(!confirm('清空全部数据（打卡 + 周测 + 刷题）？建议先导出备份。')) return;
+  store = {weeks:{},quiz:{},cdone:{},settings:store.settings};
   save(); renderAll(); toast('已清空');
 }
 
-/* ============ 导航 ============ */
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('v-'+b.dataset.v).classList.add('active');
-  if(b.dataset.v==='stat') renderStat();
-  if(b.dataset.v==='set') renderSet();
-  if(b.dataset.v==='quiz') renderQuiz();
-  window.scrollTo(0,0);
-});
+/* ==================== 十二、C 刷题页 ==================== */
+let cfilter = "all";
+function cCounts(){ let all=P.length, done=0; P.forEach((_,i)=>{ if(store.cdone[i]) done++; }); return {all,done}; }
+function setCFilter(k){ cfilter=k; renderC(); window.scrollTo(0,0); }
+function renderC(){
+  const {all,done}=cCounts();
+  const fs=[["all",`全部 ${all}`],["todo",`未做 ${all-done}`],["done",`已过 ${done}`],
+    ["1","T1 基础"],["2","T2 数组字符串"],["3","T3 指针内存"],["4","T4 结构体位运算"],["5","T5 进阶嵌入式"]];
+  document.getElementById('cfilters').innerHTML = fs.map(([k,l])=>
+    `<button class="${cfilter===k?'on':''}" onclick="setCFilter('${k}')">${l}</button>`).join('');
+  const list = P.map((p,i)=>({p,i})).filter(({p,i})=>{
+    if (cfilter==="all") return true;
+    if (cfilter==="todo") return !store.cdone[i];
+    if (cfilter==="done") return !!store.cdone[i];
+    return String(p.t)===cfilter;
+  });
+  document.getElementById('clist').innerHTML = list.map(({p,i})=>{
+    const dtag = p.d.indexOf(">60")>=0 ? "t5" : p.d.indexOf("<1")>=0 ? "t1" : "t3";
+    return `<div class="card ${store.cdone[i]?'done':''}">
+      <div class="card-h" onclick="ctog(${i})">
+        <div class="wk" style="${store.cdone[i]?'':''}">${i+1}</div>
+        <div class="card-t">${p.title}
+          <div class="meta"><span class="tag t${p.t}">${TIERS[p.t].n}</span><span class="tag ${dtag}">${p.d}</span>${store.cdone[i]?'<span class="tag t1">✓ 已通过</span>':''}</div>
+        </div>
+        <div class="chev" id="cch${i}">›</div>
+      </div>
+      <div class="body" id="cb${i}" style="display:none">
+        <div class="sec-t">题目描述</div><div style="font-size:13.5px">${p.q.replace(/\\n/g,'<br>')}</div>
+        <div class="sec-t">输入格式</div><div class="io"><span class="k">IN </span>${p.input.replace(/\\n/g,'<br>')}</div>
+        <div class="sec-t">输出格式</div><div class="io"><span class="k">OUT </span>${p.output.replace(/\\n/g,'<br>')}</div>
+        ${p.sample?`<div class="sec-t">样例</div><div class="io">${p.sample.replace(/\\n/g,'<br>')}</div>`:''}
+        <div class="sec-t">提示</div><div class="hint">${p.hint}</div>
+        <div class="sec-t">参考代码（先自己写！）</div>
+        <pre id="cc${i}" style="display:none">${p.code}</pre>
+        <div class="btns">
+          <div class="btn" id="ccb${i}" onclick="ctoggleCode(${i})">显示参考代码</div>
+          <div class="btn ${store.cdone[i]?'':'ok'}" onclick="cmark(${i})">${store.cdone[i]?'取消已通过':'标记已通过'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || `<div class="notice g">这一层暂时没有题目，换个筛选看看。</div>`;
+}
+function ctog(i){
+  const b=document.getElementById('cb'+i), c=document.getElementById('cch'+i);
+  const open=b.style.display==='block';
+  b.style.display=open?'none':'block';
+  c.classList.toggle('r', !open);
+}
+function ctoggleCode(i){
+  const pre=document.getElementById('cc'+i), btn=document.getElementById('ccb'+i);
+  const hidden = pre.style.display==='none';
+  pre.style.display = hidden?'block':'none';
+  btn.textContent = hidden?'隐藏参考代码':'显示参考代码';
+}
+function cmark(i){
+  store.cdone[i] = !store.cdone[i]; save();
+  const open = document.getElementById('cb'+i) && document.getElementById('cb'+i).style.display==='block';
+  updateHeader(); renderC(); renderCStat(); renderStat();
+  if (open){ document.getElementById('cb'+i).style.display='block';
+    document.getElementById('cch'+i).classList.add('r'); }
+  toast(store.cdone[i] ? '已记录：第 '+(i+1)+' 题通过 ✅' : '已取消标记');
+}
+function renderCStat(){
+  const {all,done}=cCounts();
+  document.getElementById('cstatGrid').innerHTML = `
+    <div class="stat"><div class="v">${done}<span style="font-size:13px;color:var(--dim)">/${all}</span></div><div class="l">已通过题目</div></div>
+    <div class="stat"><div class="v">${all?Math.round(done/all*100):0}<span style="font-size:13px;color:var(--dim)">%</span></div><div class="l">总进度</div></div>`;
+  document.getElementById('tierStats').innerHTML = [1,2,3,4,5].map(t=>{
+    const idx = P.map((p,i)=>({p,i})).filter(x=>x.p.t===t);
+    const d = idx.filter(x=>store.cdone[x.i]).length, n = idx.length;
+    return `<div class="tierRow"><div class="h"><span>${TIERS[t].n}</span><span>${d}/${n}</span></div>
+      <div class="bar" style="margin:0"><i style="width:${n?Math.round(d/n*100):0}%"></i></div></div>`;
+  }).join('');
+}
+function exportC(){
+  const blob = new Blob([JSON.stringify({cdone:store.cdone},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='c_practice_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('已导出');
+}
+function resetC(){ if(!confirm('清空刷题进度？')) return; store.cdone={}; save(); renderC(); renderCStat(); updateHeader(); toast('已清空'); }
 
-function renderAll(){ render(); renderQuiz(); renderStat(); renderSet(); }
+/* ==================== 启动 ==================== */
+function renderAll(){ updateHeader(); renderWeeks(); renderQuiz(); renderStat(); renderSet(); renderC(); renderCStat(); }
 load(); renderAll();
 </script>
 </body>
